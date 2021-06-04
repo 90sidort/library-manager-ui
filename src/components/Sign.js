@@ -11,6 +11,8 @@ import {
 } from "@material-ui/core";
 import axios from "axios";
 
+import SimpleModal from "./shared/SimpleModal";
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -40,37 +42,42 @@ const Sign = () => {
     about: "",
   };
   const classes = useStyles();
+  const [errorMessage, setErrorMessage] = useState("");
   const [sign, setSignPage] = useState(false);
   const [signForm, setSignForm] = useState(entryFormState);
+
   const onSignChange = () => {
     setSignForm(entryFormState);
     setSignPage(!sign);
   };
+
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setSignForm({ ...signForm, [id]: value });
   };
+
+  const cancelError = () => setErrorMessage("");
+
   const formSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (sign) {
+      if (!sign) {
         const response = await axios.post(
           `http://localhost:3000/api/users/login`,
           { email: signForm.email, password: signForm.password }
         );
-      }
-      if (!sign) {
+        console.log(response);
+      } else {
         const response = await axios.post(`http://localhost:3000/api/users`, {
           ...signForm,
         });
-        console.log(response);
       }
     } catch (error) {
-      console.log(error.response.data.message);
+      setErrorMessage(error.response.data.message || "Server error");
     }
   };
   let form;
-  if (!sign)
+  if (sign)
     form = (
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
@@ -169,36 +176,45 @@ const Sign = () => {
       </Grid>
     );
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Typography component="h1" variant="h5">
-          {sign ? "Sign in" : "Sign up"}
-        </Typography>
-        <form className={classes.form} autoComplete="off" onSubmit={formSubmit}>
-          {form}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
+    <React.Fragment>
+      {errorMessage && (
+        <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
+      )}
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Typography component="h1" variant="h5">
+            {!sign ? "Sign in" : "Sign up"}
+          </Typography>
+          <form
+            className={classes.form}
+            autoComplete="off"
             onSubmit={formSubmit}
           >
-            {sign ? "Sign in" : "Sign up"}
-          </Button>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <Link href="#" variant="body2" onClick={onSignChange}>
-                {sign
-                  ? "Do not have an account? Sign up"
-                  : "Already have an account? Sign in"}
-              </Link>
+            {form}
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onSubmit={formSubmit}
+            >
+              {!sign ? "Sign in" : "Sign up"}
+            </Button>
+            <Grid container justify="flex-end">
+              <Grid item>
+                <Link href="#" variant="body2" onClick={onSignChange}>
+                  {!sign
+                    ? "Do not have an account? Sign up"
+                    : "Already have an account? Sign in"}
+                </Link>
+              </Grid>
             </Grid>
-          </Grid>
-        </form>
-      </div>
-    </Container>
+          </form>
+        </div>
+      </Container>
+    </React.Fragment>
   );
 };
 

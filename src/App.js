@@ -5,7 +5,7 @@ import {
   Switch,
   Redirect,
 } from "react-router-dom";
-import Sign from "./components/sign";
+import Sign from "./components/Sign";
 
 function App() {
   return (
