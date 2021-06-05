@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Typography,
   Link,
@@ -11,7 +11,9 @@ import {
 } from "@material-ui/core";
 import axios from "axios";
 
+import { AuthContext } from "../context/auth.context";
 import SimpleModal from "./shared/SimpleModal";
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -34,6 +36,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Sign = () => {
+  const auth = useContext(AuthContext);
+  const history = useHistory();
   const entryFormState = {
     name: "",
     surname: "",
@@ -63,12 +67,19 @@ const Sign = () => {
     try {
       if (!sign) {
         const response = await axios.post(
-          `http://localhost:3000/api/users/login`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/users/login`,
           { email: signForm.email, password: signForm.password }
         );
         console.log(response);
+        auth.login(
+          response.data.userId,
+          response.data.token,
+          response.data.userName,
+          response.data.admin
+        );
+        history.push("/");
       } else {
-        const response = await axios.post(`http://localhost:3000/api/users`, {
+        const response = await axios.post(`http://localhost:5000/api/users`, {
           ...signForm,
         });
       }
