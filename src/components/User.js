@@ -8,13 +8,22 @@ import {
   CardContent,
   Button,
   Typography,
+  ListItem,
+  ListItemText,
+  List,
 } from "@material-ui/core";
 import { useLocation } from "react-router";
 import { AuthContext } from "../context/auth.context";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 275,
+  },
+  borrowings: {
+    width: "100%",
+    maxWidth: 360,
+    marginTop: "1%",
+    backgroundColor: theme.palette.background.paper,
   },
   bullet: {
     display: "inline-block",
@@ -27,7 +36,7 @@ const useStyles = makeStyles({
   pos: {
     marginBottom: 12,
   },
-});
+}));
 
 const User = (props) => {
   const classes = useStyles();
@@ -35,7 +44,10 @@ const User = (props) => {
   const auth = useContext(AuthContext);
   const uid = location.pathname.substring(7);
   const [user, setUser] = useState(null);
-  console.log(user);
+  const [borrows, showBorrows] = useState(false);
+
+  const showList = () => showBorrows(!borrows);
+
   useEffect(() => {
     const getUser = async () => {
       const response = await axios({
@@ -49,33 +61,67 @@ const User = (props) => {
     getUser();
   }, [auth.token, uid]);
   return (
-    <Card className={classes.root}>
-      {user && (
-        <CardContent>
-          <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
-          >
-            User details
-          </Typography>
-          <Typography variant="h5" component="h2">
-            {`${user.surname}, ${user.name}`}
-          </Typography>
-          <Typography className={classes.pos} color="textSecondary">
-            {user.archived ? "archived" : "active"}
-          </Typography>
-          <Typography variant="body2" component="p">
-            well meaning and kindly.
-            <br />
-            {'"a benevolent smile"'}
-          </Typography>
-        </CardContent>
+    <React.Fragment>
+      <Card className={classes.root}>
+        {user && (
+          <CardContent>
+            <Typography
+              className={classes.title}
+              color="textSecondary"
+              gutterBottom
+            >
+              User details
+            </Typography>
+            <Typography variant="h5" component="h2">
+              {`${user.surname}, ${user.name}`}
+            </Typography>
+            <Typography className={classes.pos} color="textSecondary">
+              {user.archived ? "archived" : "active"}
+            </Typography>
+            <Typography variant="body2" component="p">
+              {`email: ${user.email}`}
+            </Typography>
+            <Typography variant="body2" component="p">
+              {`joined: ${user.createdAt.split("T")[0]}`}
+            </Typography>
+            <Typography variant="body2" component="p">
+              {`about: ${user.about}`}
+            </Typography>
+          </CardContent>
+        )}
+        {user && (
+          <CardActions>
+            {auth.admin && (
+              <Button size="small" onClick={showList}>
+                Borrowed books
+              </Button>
+            )}
+            {auth.admin | (auth.userId === user._id) && (
+              <Button size="small" onClick={showList}>
+                Edit user data
+              </Button>
+            )}
+          </CardActions>
+        )}
+      </Card>
+      {user && auth.admin && borrows && (
+        <div className={classes.borrowings}>
+          <List component="nav">
+            {user.borrowed.length ? (
+              user.borrowed.map((book) => (
+                <ListItem button key={book.book._id}>
+                  <ListItemText primary={book.book.title} />
+                </ListItem>
+              ))
+            ) : (
+              <ListItem button>
+                <ListItemText primary="No books" />
+              </ListItem>
+            )}
+          </List>
+        </div>
       )}
-      <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions>
-    </Card>
+    </React.Fragment>
   );
 };
 

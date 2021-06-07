@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { AppBar, Toolbar, Typography, Button } from "@material-ui/core";
+import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
 import {
   LibraryBooks,
   ExitToApp,
@@ -12,6 +12,8 @@ import {
   RateReview,
 } from "@material-ui/icons";
 import { Link } from "react-router-dom";
+
+import { AuthContext } from "../../context/auth.context";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ButtonAppBar() {
   const classes = useStyles();
+  const auth = useContext(AuthContext);
 
   return (
     <div className={classes.root}>
@@ -56,7 +59,9 @@ export default function ButtonAppBar() {
           <Link to="/reviews">
             <RateReview className={classes.icon} color="inherit" />
           </Link>
-          <ExitToApp className={classes.icon} color="inherit" />
+          <Button onClick={auth.logout}>
+            <ExitToApp className={classes.icon} color="inherit" />
+          </Button>
         </Toolbar>
       </AppBar>
     </div>
