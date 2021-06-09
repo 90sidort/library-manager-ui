@@ -15,6 +15,8 @@ import {
 import { useLocation } from "react-router";
 import { AuthContext } from "../context/auth.context";
 
+import UserEdit from "./UserEdit";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 275,
@@ -24,6 +26,11 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 360,
     marginTop: "1%",
     backgroundColor: theme.palette.background.paper,
+  },
+  form: {
+    width: "100%",
+    marginTop: "1%",
+    marginLeft: "1%",
   },
   bullet: {
     display: "inline-block",
@@ -38,15 +45,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const User = (props) => {
+const User = () => {
   const classes = useStyles();
   const location = useLocation();
   const auth = useContext(AuthContext);
   const uid = location.pathname.substring(7);
   const [user, setUser] = useState(null);
   const [borrows, showBorrows] = useState(false);
+  const [edit, showEdit] = useState(false);
+  const [formData, setFormData] = useState(null);
 
-  const showList = () => showBorrows(!borrows);
+  const showList = () => {
+    showEdit(false);
+    showBorrows(!borrows);
+  };
+  const showForm = () => {
+    showBorrows(false);
+    showEdit(!edit);
+  };
 
   useEffect(() => {
     const getUser = async () => {
@@ -56,7 +72,13 @@ const User = (props) => {
         headers: { authorization: `Bearer ${auth.token}` },
         params: { page: 1, limit: 1, uid },
       });
-      setUser(response.data.users[0]);
+      const userData = response.data.users[0];
+      setUser(userData);
+      setFormData({
+        name: userData.name,
+        surname: userData.surname,
+        email: userData.email,
+      });
     };
     getUser();
   }, [auth.token, uid]);
@@ -97,7 +119,7 @@ const User = (props) => {
               </Button>
             )}
             {auth.admin | (auth.userId === user._id) && (
-              <Button size="small" onClick={showList}>
+              <Button size="small" onClick={showForm}>
                 Edit user data
               </Button>
             )}
@@ -121,8 +143,114 @@ const User = (props) => {
           </List>
         </div>
       )}
+      {user && auth.admin && edit && (
+        <div className={classes.form}>
+          <UserEdit
+            name={formData.name}
+            surname={formData.surname}
+            email={formData.email}
+          />
+        </div>
+      )}
     </React.Fragment>
   );
 };
 
 export default User;
+
+// import React from 'react';
+// import Grid from '@material-ui/core/Grid';
+// import Typography from '@material-ui/core/Typography';
+// import TextField from '@material-ui/core/TextField';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import Checkbox from '@material-ui/core/Checkbox';
+
+// export default function AddressForm() {
+//   return (
+//     <React.Fragment>
+//       <Typography variant="h6" gutterBottom>
+//         Shipping address
+//       </Typography>
+//       <Grid container spacing={3}>
+//         <Grid item xs={12} sm={6}>
+//           <TextField
+//             required
+//             id="firstName"
+//             name="firstName"
+//             label="First name"
+//             fullWidth
+//             autoComplete="given-name"
+//           />
+//         </Grid>
+//         <Grid item xs={12} sm={6}>
+//           <TextField
+//             required
+//             id="lastName"
+//             name="lastName"
+//             label="Last name"
+//             fullWidth
+//             autoComplete="family-name"
+//           />
+//         </Grid>
+//         <Grid item xs={12}>
+//           <TextField
+//             required
+//             id="address1"
+//             name="address1"
+//             label="Address line 1"
+//             fullWidth
+//             autoComplete="shipping address-line1"
+//           />
+//         </Grid>
+//         <Grid item xs={12}>
+//           <TextField
+//             id="address2"
+//             name="address2"
+//             label="Address line 2"
+//             fullWidth
+//             autoComplete="shipping address-line2"
+//           />
+//         </Grid>
+//         <Grid item xs={12} sm={6}>
+//           <TextField
+//             required
+//             id="city"
+//             name="city"
+//             label="City"
+//             fullWidth
+//             autoComplete="shipping address-level2"
+//           />
+//         </Grid>
+//         <Grid item xs={12} sm={6}>
+//           <TextField id="state" name="state" label="State/Province/Region" fullWidth />
+//         </Grid>
+//         <Grid item xs={12} sm={6}>
+//           <TextField
+//             required
+//             id="zip"
+//             name="zip"
+//             label="Zip / Postal code"
+//             fullWidth
+//             autoComplete="shipping postal-code"
+//           />
+//         </Grid>
+//         <Grid item xs={12} sm={6}>
+//           <TextField
+//             required
+//             id="country"
+//             name="country"
+//             label="Country"
+//             fullWidth
+//             autoComplete="shipping country"
+//           />
+//         </Grid>
+//         <Grid item xs={12}>
+//           <FormControlLabel
+//             control={<Checkbox color="secondary" name="saveAddress" value="yes" />}
+//             label="Use this address for payment details"
+//           />
+//         </Grid>
+//       </Grid>
+//     </React.Fragment>
+//   );
+// }
