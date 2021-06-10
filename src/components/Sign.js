@@ -70,7 +70,6 @@ const Sign = () => {
           `${process.env.REACT_APP_BACKEND_URL}/api/users/login`,
           { email: signForm.email, password: signForm.password }
         );
-        console.log(response);
         auth.login(
           response.data.userId,
           response.data.token,
@@ -79,7 +78,7 @@ const Sign = () => {
         );
         history.push("/");
       } else {
-        const response = await axios.post(`http://localhost:5000/api/users`, {
+        await axios.post(`http://localhost:5000/api/users`, {
           ...signForm,
         });
       }

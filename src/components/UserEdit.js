@@ -1,45 +1,147 @@
-import React from "react";
-import { Typography, TextField, Grid } from "@material-ui/core";
+import React, { useContext, useState } from "react";
+import {
+  Typography,
+  TextField,
+  Grid,
+  Button,
+  makeStyles,
+} from "@material-ui/core";
+import axios from "axios";
+
+import { AuthContext } from "../context/auth.context";
+import SimpleModal from "../components/shared/SimpleModal";
+
+const useStyles = makeStyles(() => ({
+  button: {
+    marginTop: "1%",
+  },
+}));
 
 const UserEdit = (props) => {
+  const auth = useContext(AuthContext);
+  const classes = useStyles();
+  let initialData = {
+    name: props.data.name,
+    surname: props.data.surname,
+    email: props.data.email,
+    about: props.data.about,
+  };
+  const [data, setData] = useState(initialData);
+  const [disable, setDisable] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const onDataChange = (e) => {
+    const { id, value } = e.target;
+    setData({ ...data, [id]: value });
+    setDisable(value === "" ? true : false);
+  };
+
+  const resetData = () => {
+    setData(initialData);
+  };
+
+  const cancelError = () => setErrorMessage("");
+
+  const submitUserChanges = async (e) => {
+    e.preventDefault();
+    const { setUser, hide } = props;
+    try {
+      const response = await axios({
+        method: "PUT",
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/users/${props.data.id}`,
+        headers: { authorization: `Bearer ${auth.token}` },
+        data,
+      });
+      const { name, surname, email, about } = response.data.user;
+      initialData = { name, surname, email, about };
+      await setUser(response.data.user);
+      await hide();
+      await setData({ name, surname, email, about });
+    } catch (err) {
+      setErrorMessage(err.response.data.message || "Server error");
+    }
+  };
+
+  console.log(props);
+
   return (
-    <div>
+    <React.Fragment>
+      {errorMessage && (
+        <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
+      )}
       <Typography variant="h6" gutterBottom>
         Change user data
       </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="name"
-            name="name"
-            label="Name"
-            value={props.name}
-            fullWidth
-          />
+      <form autoComplete="off" onSubmit={submitUserChanges}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              required
+              id="name"
+              name="name"
+              label="Name"
+              value={data.name}
+              onChange={onDataChange}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              onChange={onDataChange}
+              required
+              id="surname"
+              name="surname"
+              label="Surname"
+              value={data.surname}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              onChange={onDataChange}
+              required
+              id="email"
+              name="email"
+              label="Email"
+              value={data.email}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              onChange={onDataChange}
+              required
+              id="about"
+              name="about"
+              label="About"
+              value={data.about}
+              multiline
+              rows={4}
+              fullWidth
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="surname"
-            name="surname"
-            label="Surname"
-            value={props.surname}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="email"
-            name="email"
-            label="Email"
-            value={props.email}
-            fullWidth
-          />
-        </Grid>
-      </Grid>
-    </div>
+        <Button
+          className={classes.button}
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          disabled={disable}
+        >
+          Update
+        </Button>
+        <Button
+          className={classes.button}
+          onClick={resetData}
+          fullWidth
+          variant="contained"
+          color="secondary"
+        >
+          Reset
+        </Button>
+      </form>
+    </React.Fragment>
   );
 };
 
