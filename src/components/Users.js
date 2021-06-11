@@ -7,7 +7,6 @@ import {
   Typography,
   TablePagination,
   TextField,
-  Button,
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 
@@ -39,26 +38,27 @@ const Users = () => {
   const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
-  const searchInitial = {
-    name: "",
-    surname: "",
-    email: "",
-  };
   const readSearch = () => {
-    const searchQuery = location.search.substring(1);
-    const queries = searchQuery.split("&");
-    const stateData = {};
-    queries.forEach((query) => {
-      const variables = query.split("=");
-      stateData[variables[0]] = variables[1];
-    });
+    const stateData = {
+      name: "",
+      surname: "",
+      email: "",
+    };
+    if (location.search) {
+      const searchQuery = location.search.substring(1);
+      const queries = searchQuery.split("&");
+      queries.forEach((query) => {
+        const variables = query.split("=");
+        stateData[variables[0]] = variables[1];
+      });
+    }
     return stateData;
   };
   const [users, setUsers] = useState(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
   const [count, setCount] = useState(0);
-  const [search, setSearch] = useState(searchInitial);
+  const [search, setSearch] = useState(readSearch());
 
   const handleChangePage = (e, newPage) => setPage(newPage + 1);
   const handleChangeRowsPerPage = (e) => {
@@ -75,6 +75,14 @@ const Users = () => {
       search: `name=${newSearch.name}&surname=${newSearch.surname}&email=${newSearch.email}`,
     });
   };
+  // Delete user function
+  // const handleUserDelete = async (id) => {
+  //   const response = await axios({
+  //     method: 'DELETE',
+  //     url: `${process.env.REACT_APP_BACKEND_URL}/api/users/${id}`,
+  //     headers: { authorization: `Bearer ${auth.token}` },
+  //   })
+  // }
 
   const getUsers = async () => {
     const parameters = readSearch(location);
