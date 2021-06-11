@@ -7,7 +7,9 @@ import {
   Typography,
   TablePagination,
   TextField,
+  Button,
 } from "@material-ui/core";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { AuthContext } from "../context/auth.context";
 import SingleListItem from "./shared/SingleListItem";
@@ -33,12 +35,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Users = () => {
+  const history = useHistory();
+  const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
   const searchInitial = {
     name: "",
     surname: "",
     email: "",
+  };
+  const readSearch = () => {
+    const searchQuery = location.search.substring(1);
+    const queries = searchQuery.split("&");
+    const stateData = {};
+    queries.forEach((query) => {
+      const variables = query.split("=");
+      stateData[variables[0]] = variables[1];
+    });
+    return stateData;
   };
   const [users, setUsers] = useState(null);
   const [page, setPage] = useState(1);
@@ -54,20 +68,27 @@ const Users = () => {
   const handleSearchChange = (e) => {
     const { id, value } = e.target;
     setPage(1);
-    setSearch({ ...search, [id]: value });
+    const newSearch = { ...search, [id]: value };
+    setSearch(newSearch);
+    history.push({
+      pathname: "/users",
+      search: `name=${newSearch.name}&surname=${newSearch.surname}&email=${newSearch.email}`,
+    });
+  };
+
+  const getUsers = async () => {
+    const parameters = readSearch(location);
+    const response = await axios({
+      method: "GET",
+      url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
+      headers: { authorization: `Bearer ${auth.token}` },
+      params: { page, limit, ...parameters },
+    });
+    setUsers(response.data.users);
+    setCount(response.data.count);
   };
 
   useEffect(() => {
-    const getUsers = async () => {
-      const response = await axios({
-        method: "GET",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
-        headers: { authorization: `Bearer ${auth.token}` },
-        params: { page, limit, ...search },
-      });
-      setUsers(response.data.users);
-      setCount(response.data.count);
-    };
     getUsers();
   }, [auth.token, limit, page, search]);
 
