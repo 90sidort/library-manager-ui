@@ -18,13 +18,14 @@ const useStyles = makeStyles(() => ({
 }));
 
 const UserEdit = (props) => {
+  const { name, surname, email, about, id } = props.data;
   const auth = useContext(AuthContext);
   const classes = useStyles();
   let initialData = {
-    name: props.data.name,
-    surname: props.data.surname,
-    email: props.data.email,
-    about: props.data.about,
+    name,
+    surname,
+    email,
+    about,
   };
   const [data, setData] = useState(initialData);
   const [disable, setDisable] = useState(false);
@@ -44,25 +45,20 @@ const UserEdit = (props) => {
 
   const submitUserChanges = async (e) => {
     e.preventDefault();
-    const { setUser, hide } = props;
+    const { hide, updateUserComponent } = props;
     try {
       const response = await axios({
         method: "PUT",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/users/${props.data.id}`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/users/${id}`,
         headers: { authorization: `Bearer ${auth.token}` },
         data,
       });
-      const { name, surname, email, about } = response.data.user;
-      initialData = { name, surname, email, about };
-      await setUser(response.data.user);
       await hide();
-      await setData({ name, surname, email, about });
+      updateUserComponent(response.data.user);
     } catch (err) {
       setErrorMessage(err.response.data.message || "Server error");
     }
   };
-
-  console.log(props);
 
   return (
     <React.Fragment>

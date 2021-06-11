@@ -13,8 +13,8 @@ import {
   List,
 } from "@material-ui/core";
 import { useLocation } from "react-router";
-import { AuthContext } from "../context/auth.context";
 
+import { AuthContext } from "../context/auth.context";
 import UserEdit from "./UserEdit";
 
 const useStyles = makeStyles((theme) => ({
@@ -64,6 +64,18 @@ const User = () => {
     showEdit(!edit);
   };
 
+  const updateUser = (user) => {
+    const { name, surname, email, about, _id } = user;
+    setUser(user);
+    setFormData({
+      name,
+      surname,
+      email,
+      about,
+      id: _id,
+    });
+  };
+
   const getUser = async () => {
     const response = await axios({
       method: "GET",
@@ -80,12 +92,12 @@ const User = () => {
       about: userData.about,
       id: userData._id,
     });
-    console.log(userData);
   };
 
   useEffect(() => {
     getUser();
   }, []);
+
   return (
     <React.Fragment>
       <Card className={classes.root}>
@@ -149,7 +161,11 @@ const User = () => {
       )}
       {user && auth.admin && edit && (
         <div className={classes.form}>
-          <UserEdit data={formData} hide={showForm} getUser={getUser} />
+          <UserEdit
+            data={formData}
+            hide={showForm}
+            updateUserComponent={updateUser}
+          />
         </div>
       )}
     </React.Fragment>
