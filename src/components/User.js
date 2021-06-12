@@ -24,6 +24,10 @@ import { useHistory } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 275,
+    alignItems: "center",
+    justifyContent: "center",
+    display: "flex",
+    marginTop: "3%",
   },
   borrowings: {
     width: "100%",
@@ -43,6 +47,10 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     fontSize: 14,
+  },
+  lines: {
+    paddingBottom: 7,
+    paddingTop: 7,
   },
   pos: {
     marginBottom: 12,
@@ -119,64 +127,88 @@ const User = (props) => {
       {errorMessage && (
         <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
       )}
-      <Card className={classes.root}>
-        {loading && (
-          <Grid container spacing={2}>
-            <CircularProgress
-              color="secondary"
-              style={{
-                width: "20%",
-                height: "20%",
-                margin: "auto",
-                marginTop: "3%",
-              }}
-            />
-          </Grid>
-        )}
-        {user && !loading && (
-          <CardContent>
-            <Typography
-              className={classes.title}
-              color="textSecondary"
-              gutterBottom
-            >
-              User details
-            </Typography>
-            <Typography variant="h5" component="h2">
-              {`${user.surname}, ${user.name}`}
-            </Typography>
-            <Typography className={classes.pos} color="textSecondary">
-              {user.archived ? "archived" : "active"}
-            </Typography>
-            <Typography variant="body2" component="p">
-              {`email: ${user.email}`}
-            </Typography>
-            <Typography variant="body2" component="p">
-              {`joined: ${user.createdAt.split("T")[0]}`}
-            </Typography>
-            <Typography variant="body2" component="p">
-              {`about: ${user.about}`}
-            </Typography>
-          </CardContent>
-        )}
-        {user && (
-          <CardActions>
-            {auth.admin && (
-              <Button size="small" onClick={showList}>
-                Borrowed books
-              </Button>
+      <Grid container spacing={2} className={classes.root}>
+        <Grid item xs={12} sm={6}>
+          <Card>
+            {loading && (
+              <Grid container spacing={2}>
+                <CircularProgress
+                  color="secondary"
+                  style={{
+                    width: "20%",
+                    height: "20%",
+                    margin: "auto",
+                    marginTop: "3%",
+                  }}
+                />
+              </Grid>
             )}
-            {auth.admin | (auth.userId === user._id) && (
-              <Button size="small" onClick={showForm}>
-                Edit user data
-              </Button>
+            {user && !loading && (
+              <CardContent>
+                <Typography
+                  className={classes.title}
+                  color="textSecondary"
+                  gutterBottom
+                >
+                  User details
+                </Typography>
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  className={classes.lines}
+                >
+                  {`${user.surname}, ${user.name}`}
+                </Typography>
+                <Typography
+                  className={classes.pos}
+                  color="textSecondary"
+                  className={classes.lines}
+                >
+                  {user.archived ? "archived" : "active"}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  component="p"
+                  className={classes.lines}
+                >
+                  {`Email: ${user.email}`}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  component="p"
+                  className={classes.lines}
+                >
+                  {`Joined: ${user.createdAt.split("T")[0]}`}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  component="p"
+                  className={classes.lines}
+                >
+                  {`About: ${user.about}`}
+                </Typography>
+              </CardContent>
             )}
-            <Button size="small" onClick={() => history.goBack()}>
-              Go back
-            </Button>
-          </CardActions>
-        )}
-      </Card>
+            {user && (
+              <CardActions>
+                {auth.admin && (
+                  <Button size="small" onClick={showList}>
+                    Borrowed books
+                  </Button>
+                )}
+                {auth.admin | (auth.userId === user._id) && (
+                  <Button size="small" onClick={showForm}>
+                    Edit user data
+                  </Button>
+                )}
+                <Button size="small" onClick={() => history.goBack()}>
+                  Go back
+                </Button>
+              </CardActions>
+            )}
+          </Card>
+        </Grid>
+      </Grid>
       {user && auth.admin && borrows && (
         <div className={classes.borrowings}>
           <List component="nav">
@@ -195,14 +227,18 @@ const User = (props) => {
         </div>
       )}
       {user && auth.admin && edit && (
-        <div className={classes.form}>
-          <UserEdit
-            data={formData}
-            hide={showForm}
-            updateUserComponent={updateUser}
-            loading={setLoading}
-          />
-        </div>
+        <Grid container spacing={2} className={classes.root}>
+          <Grid item xs={12} sm={6}>
+            <div className={classes.form}>
+              <UserEdit
+                data={formData}
+                hide={showForm}
+                updateUserComponent={updateUser}
+                loading={setLoading}
+              />
+            </div>
+          </Grid>
+        </Grid>
       )}
     </React.Fragment>
   );

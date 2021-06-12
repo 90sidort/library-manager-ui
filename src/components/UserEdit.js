@@ -13,7 +13,12 @@ import SimpleModal from "../components/shared/SimpleModal";
 
 const useStyles = makeStyles(() => ({
   button: {
-    marginTop: "1%",
+    marginTop: "2%",
+    marginRight: "2%",
+    marginBottom: "1%",
+  },
+  buttonGroup: {
+    marginLeft: "auto",
   },
 }));
 
@@ -47,6 +52,7 @@ const UserEdit = (props) => {
     e.preventDefault();
     const { hide, updateUserComponent, loading } = props;
     try {
+      await hide();
       loading(true);
       const response = await axios({
         method: "PUT",
@@ -54,7 +60,6 @@ const UserEdit = (props) => {
         headers: { authorization: `Bearer ${auth.token}` },
         data,
       });
-      await hide();
       loading(false);
       updateUserComponent(response.data.user);
     } catch (error) {
@@ -72,9 +77,31 @@ const UserEdit = (props) => {
       <Typography variant="h6" gutterBottom>
         Change user data
       </Typography>
-      <form autoComplete="off" onSubmit={submitUserChanges}>
+      <form
+        autoComplete="off"
+        onSubmit={submitUserChanges}
+        style={{ marginBottom: "10%" }}
+      >
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <div className={classes.buttonGroup}></div>
+          <Button
+            className={classes.button}
+            type="submit"
+            variant="outlined"
+            color="primary"
+            disabled={disable}
+          >
+            Update
+          </Button>
+          <Button
+            className={classes.button}
+            onClick={resetData}
+            variant="contained"
+            color="secondary"
+          >
+            Reset
+          </Button>
+          <Grid item xs={12}>
             <TextField
               required
               id="name"
@@ -85,7 +112,7 @@ const UserEdit = (props) => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <TextField
               onChange={onDataChange}
               required
@@ -96,7 +123,7 @@ const UserEdit = (props) => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <TextField
               onChange={onDataChange}
               required
@@ -107,7 +134,7 @@ const UserEdit = (props) => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <TextField
               onChange={onDataChange}
               required
@@ -121,25 +148,6 @@ const UserEdit = (props) => {
             />
           </Grid>
         </Grid>
-        <Button
-          className={classes.button}
-          type="submit"
-          fullWidth
-          variant="contained"
-          color="primary"
-          disabled={disable}
-        >
-          Update
-        </Button>
-        <Button
-          className={classes.button}
-          onClick={resetData}
-          fullWidth
-          variant="contained"
-          color="secondary"
-        >
-          Reset
-        </Button>
       </form>
     </React.Fragment>
   );
