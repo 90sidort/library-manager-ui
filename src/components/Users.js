@@ -97,7 +97,10 @@ const Users = () => {
   };
 
   useEffect(() => {
-    getUsers();
+    const timer = setTimeout(() => {
+      getUsers();
+    }, 1000);
+    return () => clearTimeout(timer);
   }, [auth.token, limit, page, search]);
 
   return (
