@@ -1,6 +1,12 @@
 import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
+import {
+  AppBar,
+  Button,
+  Toolbar,
+  Typography,
+  Tooltip,
+} from "@material-ui/core";
 import {
   LibraryBooks,
   ExitToApp,
@@ -10,6 +16,7 @@ import {
   Create,
   Category,
   RateReview,
+  VpnKey,
 } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
@@ -41,27 +48,51 @@ export default function ButtonAppBar() {
           <Typography variant="h6" className={classes.title}>
             LIB MANAGER
           </Typography>
-          <Link to="/users">
-            <PeopleAlt className={classes.icon} color="inherit" />
-          </Link>
-          <Link to="/">
-            <MenuBook className={classes.icon} color="inherit" />
-          </Link>
-          <Link to="/authors">
-            <Create className={classes.icon} color="inherit" />
-          </Link>
-          <Link to="/countries">
-            <Public className={classes.icon} color="inherit" />
-          </Link>
-          <Link to="/genres">
-            <Category className={classes.icon} color="inherit" />
-          </Link>
-          <Link to="/reviews">
-            <RateReview className={classes.icon} color="inherit" />
-          </Link>
-          <Button onClick={auth.logout}>
-            <ExitToApp className={classes.icon} color="inherit" />
-          </Button>
+          {auth.token ? (
+            <React.Fragment>
+              <Tooltip title="Users" aria-label="users">
+                <Link to="/users">
+                  <PeopleAlt className={classes.icon} color="inherit" />
+                </Link>
+              </Tooltip>
+              <Tooltip title="Books" aria-label="books">
+                <Link to="/">
+                  <MenuBook className={classes.icon} color="inherit" />
+                </Link>
+              </Tooltip>
+              <Tooltip title="Authors" aria-label="author">
+                <Link to="/authors">
+                  <Create className={classes.icon} color="inherit" />
+                </Link>
+              </Tooltip>
+              <Tooltip title="Countries" aria-label="countries">
+                <Link to="/countries">
+                  <Public className={classes.icon} color="inherit" />
+                </Link>
+              </Tooltip>
+              <Tooltip title="Genres" aria-label="sign">
+                <Link to="/genres">
+                  <Category className={classes.icon} color="inherit" />
+                </Link>
+              </Tooltip>
+              <Tooltip title="Reviews" aria-label="sign">
+                <Link to="/reviews">
+                  <RateReview className={classes.icon} color="inherit" />
+                </Link>
+              </Tooltip>
+              <Tooltip title="Logout" aria-label="sign">
+                <Button onClick={auth.logout}>
+                  <ExitToApp className={classes.icon} color="inherit" />
+                </Button>
+              </Tooltip>
+            </React.Fragment>
+          ) : (
+            <Tooltip title="Sign" aria-label="sign">
+              <Link to="/sign">
+                <VpnKey className={classes.icon} color="inherit" />
+              </Link>
+            </Tooltip>
+          )}
         </Toolbar>
       </AppBar>
     </div>

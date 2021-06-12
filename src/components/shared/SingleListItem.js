@@ -10,6 +10,7 @@ import { AccountCircle, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
 const SingleListItem = (props) => {
+  console.log(props);
   return (
     <ListItem>
       <ListItemAvatar>
@@ -18,7 +19,10 @@ const SingleListItem = (props) => {
         </Avatar>
       </ListItemAvatar>
       <Link
-        to={`${props.link}`}
+        to={{
+          pathname: `${props.link}`,
+          state: { from: props.back },
+        }}
         style={{ textDecoration: "none", color: "black" }}
       >
         <ListItemText primary={`${props.surname}, ${props.name}`} />{" "}

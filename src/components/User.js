@@ -45,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const User = () => {
+const User = (props) => {
+  console.log(props);
   const classes = useStyles();
   const location = useLocation();
   const auth = useContext(AuthContext);

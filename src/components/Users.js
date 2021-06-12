@@ -86,14 +86,14 @@ const Users = () => {
 
   const getUsers = async () => {
     const parameters = readSearch(location);
-    const response = await axios({
+    const { data } = await axios({
       method: "GET",
       url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
       headers: { authorization: `Bearer ${auth.token}` },
       params: { page, limit, ...parameters },
     });
-    setUsers(response.data.users);
-    setCount(response.data.count);
+    setUsers(data.users);
+    setCount(data.count);
   };
 
   useEffect(() => {
@@ -139,6 +139,7 @@ const Users = () => {
                     name={user.name}
                     surname={user.surname}
                     link={`users/${user._id}`}
+                    back={location.search}
                   />
                 ))
               ) : (
