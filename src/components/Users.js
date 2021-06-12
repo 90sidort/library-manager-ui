@@ -7,6 +7,7 @@ import {
   Typography,
   TablePagination,
   TextField,
+  CircularProgress,
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 
@@ -25,6 +26,13 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     width: "100%",
     marginLeft: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    display: "flex",
+  },
+  fields: {
+    margin: "auto",
+    width: "50%",
   },
   demo: {
     backgroundColor: theme.palette.background.paper,
@@ -61,6 +69,7 @@ const Users = () => {
   const [count, setCount] = useState(0);
   const [search, setSearch] = useState(readSearch());
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChangePage = (e, newPage) => setPage(newPage + 1);
   const handleChangeRowsPerPage = (e) => {
@@ -98,6 +107,7 @@ const Users = () => {
       });
       setUsers(data.users);
       setCount(data.count);
+      setLoading(false);
     } catch (error) {
       setErrorMessage(
         error.response ? error.response.data.message : "Server error"
@@ -106,6 +116,7 @@ const Users = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     const timer = setTimeout(() => {
       getUsers();
     }, 1000);
@@ -129,6 +140,7 @@ const Users = () => {
               variant="outlined"
               onChange={handleSearchChange}
               value={search.name}
+              className={classes.fields}
             />
             <TextField
               id="surname"
@@ -136,6 +148,7 @@ const Users = () => {
               variant="outlined"
               onChange={handleSearchChange}
               value={search.surname}
+              className={classes.fields}
             />
             <TextField
               id="email"
@@ -143,10 +156,32 @@ const Users = () => {
               variant="outlined"
               onChange={handleSearchChange}
               value={search.email}
+              className={classes.fields}
             />
           </form>
+          <TablePagination
+            component="div"
+            page={page - 1}
+            rowsPerPage={limit}
+            count={count}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
           <div className={classes.demo}>
-            {users && (
+            {loading && (
+              <Grid container spacing={2}>
+                <CircularProgress
+                  color="secondary"
+                  style={{
+                    width: "20%",
+                    height: "20%",
+                    margin: "auto",
+                    marginTop: "3%",
+                  }}
+                />
+              </Grid>
+            )}
+            {users && !loading && (
               <List>
                 {users.length > 0 ? (
                   users.map((user) => (
@@ -164,14 +199,6 @@ const Users = () => {
             )}
           </div>
         </Grid>
-        <TablePagination
-          component="div"
-          page={page - 1}
-          rowsPerPage={limit}
-          count={count}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
       </div>
     </React.Fragment>
   );

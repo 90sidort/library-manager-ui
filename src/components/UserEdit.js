@@ -45,8 +45,9 @@ const UserEdit = (props) => {
 
   const submitUserChanges = async (e) => {
     e.preventDefault();
-    const { hide, updateUserComponent } = props;
+    const { hide, updateUserComponent, loading } = props;
     try {
+      loading(true);
       const response = await axios({
         method: "PUT",
         url: `${process.env.REACT_APP_BACKEND_URL}/api/users/${id}`,
@@ -54,6 +55,7 @@ const UserEdit = (props) => {
         data,
       });
       await hide();
+      loading(false);
       updateUserComponent(response.data.user);
     } catch (error) {
       setErrorMessage(

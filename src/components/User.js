@@ -11,6 +11,8 @@ import {
   ListItem,
   ListItemText,
   List,
+  CircularProgress,
+  Grid,
 } from "@material-ui/core";
 import { useLocation } from "react-router";
 
@@ -58,6 +60,7 @@ const User = (props) => {
   const [edit, showEdit] = useState(false);
   const [formData, setFormData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const showList = () => {
     showEdit(false);
@@ -82,6 +85,7 @@ const User = (props) => {
   };
 
   const getUser = async () => {
+    setLoading(true);
     try {
       const response = await axios({
         method: "GET",
@@ -98,6 +102,7 @@ const User = (props) => {
         about: userData.about,
         id: userData._id,
       });
+      setLoading(false);
     } catch (error) {
       setErrorMessage(
         error.response ? error.response.data.message : "Server error"
@@ -109,15 +114,26 @@ const User = (props) => {
     getUser();
   }, []);
 
-  console.log(history);
-
   return (
     <React.Fragment>
       {errorMessage && (
         <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
       )}
       <Card className={classes.root}>
-        {user && (
+        {loading && (
+          <Grid container spacing={2}>
+            <CircularProgress
+              color="secondary"
+              style={{
+                width: "20%",
+                height: "20%",
+                margin: "auto",
+                marginTop: "3%",
+              }}
+            />
+          </Grid>
+        )}
+        {user && !loading && (
           <CardContent>
             <Typography
               className={classes.title}
@@ -184,6 +200,7 @@ const User = (props) => {
             data={formData}
             hide={showForm}
             updateUserComponent={updateUser}
+            loading={setLoading}
           />
         </div>
       )}
