@@ -21,7 +21,6 @@ const SingleListItem = (props) => {
       <Link
         to={{
           pathname: `${props.link}`,
-          state: { from: props.back },
         }}
         style={{ textDecoration: "none", color: "black" }}
       >

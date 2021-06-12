@@ -16,6 +16,8 @@ import { useLocation } from "react-router";
 
 import { AuthContext } from "../context/auth.context";
 import UserEdit from "./UserEdit";
+import SimpleModal from "./shared/SimpleModal";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const User = (props) => {
-  console.log(props);
+  const history = useHistory();
   const classes = useStyles();
   const location = useLocation();
   const auth = useContext(AuthContext);
@@ -55,6 +57,7 @@ const User = (props) => {
   const [borrows, showBorrows] = useState(false);
   const [edit, showEdit] = useState(false);
   const [formData, setFormData] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const showList = () => {
     showEdit(false);
@@ -64,6 +67,7 @@ const User = (props) => {
     showBorrows(false);
     showEdit(!edit);
   };
+  const cancelError = () => setErrorMessage("");
 
   const updateUser = (user) => {
     const { name, surname, email, about, _id } = user;
@@ -78,29 +82,40 @@ const User = (props) => {
   };
 
   const getUser = async () => {
-    const response = await axios({
-      method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
-      headers: { authorization: `Bearer ${auth.token}` },
-      params: { page: 1, limit: 1, uid },
-    });
-    const userData = response.data.users[0];
-    setUser(userData);
-    setFormData({
-      name: userData.name,
-      surname: userData.surname,
-      email: userData.email,
-      about: userData.about,
-      id: userData._id,
-    });
+    try {
+      const response = await axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
+        headers: { authorization: `Bearer ${auth.token}` },
+        params: { page: 1, limit: 1, uid },
+      });
+      const userData = response.data.users[0];
+      setUser(userData);
+      setFormData({
+        name: userData.name,
+        surname: userData.surname,
+        email: userData.email,
+        about: userData.about,
+        id: userData._id,
+      });
+    } catch (error) {
+      setErrorMessage(
+        error.response ? error.response.data.message : "Server error"
+      );
+    }
   };
 
   useEffect(() => {
     getUser();
   }, []);
 
+  console.log(history);
+
   return (
     <React.Fragment>
+      {errorMessage && (
+        <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
+      )}
       <Card className={classes.root}>
         {user && (
           <CardContent>
@@ -140,6 +155,9 @@ const User = (props) => {
                 Edit user data
               </Button>
             )}
+            <Button size="small" onClick={() => history.goBack()}>
+              Go back
+            </Button>
           </CardActions>
         )}
       </Card>

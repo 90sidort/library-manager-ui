@@ -12,6 +12,7 @@ import { useHistory, useLocation } from "react-router-dom";
 
 import { AuthContext } from "../context/auth.context";
 import SingleListItem from "./shared/SingleListItem";
+import SimpleModal from "./shared/SimpleModal";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,12 +60,14 @@ const Users = () => {
   const [limit, setLimit] = useState(25);
   const [count, setCount] = useState(0);
   const [search, setSearch] = useState(readSearch());
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChangePage = (e, newPage) => setPage(newPage + 1);
   const handleChangeRowsPerPage = (e) => {
     setLimit(parseInt(e.target.value));
     setPage(1);
   };
+  const cancelError = () => setErrorMessage("");
   const handleSearchChange = (e) => {
     const { id, value } = e.target;
     setPage(1);
@@ -85,15 +88,21 @@ const Users = () => {
   // }
 
   const getUsers = async () => {
-    const parameters = readSearch(location);
-    const { data } = await axios({
-      method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
-      headers: { authorization: `Bearer ${auth.token}` },
-      params: { page, limit, ...parameters },
-    });
-    setUsers(data.users);
-    setCount(data.count);
+    try {
+      const parameters = readSearch(location);
+      const { data } = await axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
+        headers: { authorization: `Bearer ${auth.token}` },
+        params: { page, limit, ...parameters },
+      });
+      setUsers(data.users);
+      setCount(data.count);
+    } catch (error) {
+      setErrorMessage(
+        error.response ? error.response.data.message : "Server error"
+      );
+    }
   };
 
   useEffect(() => {
@@ -104,63 +113,67 @@ const Users = () => {
   }, [auth.token, limit, page, search]);
 
   return (
-    <div className={classes.root}>
-      <Grid item xs={12} md={12}>
-        <Typography variant="h6" className={classes.title}>
-          Users
-        </Typography>
-        <form className={classes.form} noValidate autoComplete="off">
-          <TextField
-            id="name"
-            label="Name"
-            variant="outlined"
-            onChange={handleSearchChange}
-            value={search.name}
-          />
-          <TextField
-            id="surname"
-            label="Surname"
-            variant="outlined"
-            onChange={handleSearchChange}
-            value={search.surname}
-          />
-          <TextField
-            id="email"
-            label="Email"
-            variant="outlined"
-            onChange={handleSearchChange}
-            value={search.email}
-          />
-        </form>
-        <div className={classes.demo}>
-          {users && (
-            <List>
-              {users.length > 0 ? (
-                users.map((user) => (
-                  <SingleListItem
-                    key={user._id}
-                    name={user.name}
-                    surname={user.surname}
-                    link={`users/${user._id}`}
-                    back={location.search}
-                  />
-                ))
-              ) : (
-                <p>No users match search criteria</p>
-              )}
-            </List>
-          )}
-        </div>
-      </Grid>
-      <TablePagination
-        component="div"
-        page={page - 1}
-        rowsPerPage={limit}
-        count={count}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </div>
+    <React.Fragment>
+      {errorMessage && (
+        <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
+      )}
+      <div className={classes.root}>
+        <Grid item xs={12} md={12}>
+          <Typography variant="h6" className={classes.title}>
+            Users
+          </Typography>
+          <form className={classes.form} noValidate autoComplete="off">
+            <TextField
+              id="name"
+              label="Name"
+              variant="outlined"
+              onChange={handleSearchChange}
+              value={search.name}
+            />
+            <TextField
+              id="surname"
+              label="Surname"
+              variant="outlined"
+              onChange={handleSearchChange}
+              value={search.surname}
+            />
+            <TextField
+              id="email"
+              label="Email"
+              variant="outlined"
+              onChange={handleSearchChange}
+              value={search.email}
+            />
+          </form>
+          <div className={classes.demo}>
+            {users && (
+              <List>
+                {users.length > 0 ? (
+                  users.map((user) => (
+                    <SingleListItem
+                      key={user._id}
+                      name={user.name}
+                      surname={user.surname}
+                      link={`users/${user._id}`}
+                    />
+                  ))
+                ) : (
+                  <p>No users match search criteria</p>
+                )}
+              </List>
+            )}
+          </div>
+        </Grid>
+        <TablePagination
+          component="div"
+          page={page - 1}
+          rowsPerPage={limit}
+          count={count}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </div>
+    </React.Fragment>
   );
 };
 

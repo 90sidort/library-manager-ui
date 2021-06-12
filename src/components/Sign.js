@@ -10,10 +10,10 @@ import {
   CssBaseline,
 } from "@material-ui/core";
 import axios from "axios";
-
-import { AuthContext } from "../context/auth.context";
-import SimpleModal from "./shared/SimpleModal";
 import { useHistory } from "react-router";
+
+import SimpleModal from "./shared/SimpleModal";
+import { AuthContext } from "../context/auth.context";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

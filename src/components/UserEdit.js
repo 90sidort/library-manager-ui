@@ -55,8 +55,10 @@ const UserEdit = (props) => {
       });
       await hide();
       updateUserComponent(response.data.user);
-    } catch (err) {
-      setErrorMessage(err.response.data.message || "Server error");
+    } catch (error) {
+      setErrorMessage(
+        error.response ? error.response.data.message : "Server error"
+      );
     }
   };
 
