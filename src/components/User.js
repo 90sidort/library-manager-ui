@@ -60,7 +60,6 @@ const User = (props) => {
   const classes = useStyles();
   const location = useLocation();
   const auth = useContext(AuthContext);
-  const uid = location.pathname.substring(7);
   const [user, setUser] = useState(null);
   const [borrows, showBorrows] = useState(false);
   const [edit, showEdit] = useState(false);
@@ -97,7 +96,11 @@ const User = (props) => {
         method: "GET",
         url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
         headers: { authorization: `Bearer ${auth.token}` },
-        params: { page: 1, limit: 1, uid },
+        params: {
+          page: 1,
+          limit: 1,
+          uid: location.pathname.substring(7),
+        },
       });
       const userData = response.data.users[0];
       setUser(userData);
@@ -189,7 +192,7 @@ const User = (props) => {
             )}
             {user && (
               <CardActions>
-                {auth.admin && (
+                {auth.admin | (auth.userId === user._id) && (
                   <Button size="small" onClick={showList}>
                     Borrowed books
                   </Button>
@@ -207,7 +210,7 @@ const User = (props) => {
           </Card>
         </Grid>
       </Grid>
-      {user && auth.admin && borrows && (
+      {user && borrows && (
         <Grid container spacing={2} className={classes.root}>
           <Grid item xs={12} sm={6}>
             <div className={classes.borrowings}>
@@ -216,7 +219,7 @@ const User = (props) => {
           </Grid>
         </Grid>
       )}
-      {user && auth.admin && edit && (
+      {user && edit && (
         <Grid container spacing={2} className={classes.root}>
           <Grid item xs={12} sm={6}>
             <div className={classes.form}>

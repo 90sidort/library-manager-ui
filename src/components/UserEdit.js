@@ -58,6 +58,7 @@ const UserEdit = (props) => {
         method: "PUT",
         url: `${process.env.REACT_APP_BACKEND_URL}/api/users/${id}`,
         headers: { authorization: `Bearer ${auth.token}` },
+        params: { uid: id },
         data,
       });
       loading(false);

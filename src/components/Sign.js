@@ -81,6 +81,7 @@ const Sign = () => {
         await axios.post(`http://localhost:5000/api/users`, {
           ...signForm,
         });
+        history.push("/");
       }
     } catch (error) {
       setErrorMessage(error.response.data.message || "Server error");

@@ -17,6 +17,7 @@ import {
   Category,
   RateReview,
   VpnKey,
+  AccountCircle,
 } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
@@ -50,11 +51,19 @@ export default function ButtonAppBar() {
           </Typography>
           {auth.token ? (
             <React.Fragment>
-              <Tooltip title="Users" aria-label="users">
-                <Link to="/users">
-                  <PeopleAlt className={classes.icon} color="inherit" />
-                </Link>
-              </Tooltip>
+              {auth.admin ? (
+                <Tooltip title="Users" aria-label="users">
+                  <Link to="/users">
+                    <PeopleAlt className={classes.icon} color="inherit" />
+                  </Link>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Profile" aria-label="users">
+                  <Link to={`/users/${auth.userId}`}>
+                    <AccountCircle className={classes.icon} color="inherit" />
+                  </Link>
+                </Tooltip>
+              )}
               <Tooltip title="Books" aria-label="books">
                 <Link to="/">
                   <MenuBook className={classes.icon} color="inherit" />
