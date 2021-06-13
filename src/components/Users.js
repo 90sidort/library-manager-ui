@@ -87,14 +87,23 @@ const Users = () => {
       search: `name=${newSearch.name}&surname=${newSearch.surname}&email=${newSearch.email}`,
     });
   };
-  // Delete user function
-  // const handleUserDelete = async (id) => {
-  //   const response = await axios({
-  //     method: 'DELETE',
-  //     url: `${process.env.REACT_APP_BACKEND_URL}/api/users/${id}`,
-  //     headers: { authorization: `Bearer ${auth.token}` },
-  //   })
-  // }
+
+  const handleUserDelete = async (id) => {
+    setLoading(true);
+    try {
+      await axios({
+        method: "DELETE",
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/users/${id}`,
+        headers: { authorization: `Bearer ${auth.token}` },
+      });
+      await getUsers();
+      setLoading(false);
+    } catch (error) {
+      setErrorMessage(
+        error.response ? error.response.data.message : "Server error"
+      );
+    }
+  };
 
   const getUsers = async () => {
     try {
@@ -187,9 +196,11 @@ const Users = () => {
                   users.map((user) => (
                     <SingleListItem
                       key={user._id}
+                      id={user._id}
                       name={user.name}
                       surname={user.surname}
                       link={`users/${user._id}`}
+                      deleteUser={handleUserDelete}
                     />
                   ))
                 ) : (

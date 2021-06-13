@@ -10,7 +10,7 @@ import { AccountCircle, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
 const SingleListItem = (props) => {
-  console.log(props);
+  const { id, deleteUser } = props;
   return (
     <ListItem>
       <ListItemAvatar>
@@ -27,7 +27,11 @@ const SingleListItem = (props) => {
         <ListItemText primary={`${props.surname}, ${props.name}`} />{" "}
       </Link>
       <ListItemSecondaryAction>
-        <IconButton edge="end" aria-label="delete">
+        <IconButton
+          edge="end"
+          aria-label="delete"
+          onClick={() => deleteUser(id)}
+        >
           <Delete />
         </IconButton>
       </ListItemSecondaryAction>

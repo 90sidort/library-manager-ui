@@ -8,9 +8,6 @@ import {
   CardContent,
   Button,
   Typography,
-  ListItem,
-  ListItemText,
-  List,
   CircularProgress,
   Grid,
 } from "@material-ui/core";
@@ -19,6 +16,7 @@ import { useLocation } from "react-router";
 import { AuthContext } from "../context/auth.context";
 import UserEdit from "./UserEdit";
 import SimpleModal from "./shared/SimpleModal";
+import BookList from "./BookList";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -210,21 +208,13 @@ const User = (props) => {
         </Grid>
       </Grid>
       {user && auth.admin && borrows && (
-        <div className={classes.borrowings}>
-          <List component="nav">
-            {user.borrowed.length ? (
-              user.borrowed.map((book) => (
-                <ListItem button key={book.book._id}>
-                  <ListItemText primary={book.book.title} />
-                </ListItem>
-              ))
-            ) : (
-              <ListItem button>
-                <ListItemText primary="No books" />
-              </ListItem>
-            )}
-          </List>
-        </div>
+        <Grid container spacing={2} className={classes.root}>
+          <Grid item xs={12} sm={6}>
+            <div className={classes.borrowings}>
+              <BookList borrowed={user.borrowed} />
+            </div>
+          </Grid>
+        </Grid>
       )}
       {user && auth.admin && edit && (
         <Grid container spacing={2} className={classes.root}>
