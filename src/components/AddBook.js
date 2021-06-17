@@ -6,12 +6,14 @@ import {
   Button,
   makeStyles,
   FormControlLabel,
+  InputLabel,
   Checkbox,
 } from "@material-ui/core";
 import axios from "axios";
 
 import { AuthContext } from "../context/auth.context";
-import SimpleModal from "../components/shared/SimpleModal";
+import { FormControl } from "@material-ui/core";
+import { Select } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -25,10 +27,14 @@ const useStyles = makeStyles(() => ({
 }));
 
 const AddBook = (props) => {
+  const { genres, authors } = props;
   const auth = useContext(AuthContext);
   const classes = useStyles();
   let initialData = {
     title: "",
+    genre: [],
+    authors: [],
+    language: "polish",
     pages: 0,
     published: 2000,
     publisher: "",
@@ -37,18 +43,35 @@ const AddBook = (props) => {
   };
   const [data, setData] = useState(initialData);
   const [disable, setDisable] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const resetData = () => {
+    setData(initialData);
+    setDisable(true);
+  };
 
   const onDataChange = (e) => {
     let { value } = e.target;
-    const { id } = e.target;
+    const { id, options } = e.target;
     if (id === "pages" || id === "published") value = parseInt(value);
     else if (id === "available") value = value === "true" ? false : true;
+    if (id === "genre" || id === "authors") {
+      value = [];
+      for (let i = 0, l = options.length; i < l; i += 1) {
+        if (options[i].selected) {
+          value.push(options[i].value);
+        }
+      }
+    }
     const newData = { ...data, [id]: value };
     setData(newData);
     for (const [key, value] of Object.entries(newData)) {
       if (key !== "description") {
-        if (value === "" || value === null || value === undefined) {
+        if (
+          value === "" ||
+          value === null ||
+          value === undefined ||
+          (Array.isArray(value) && value.length < 1)
+        ) {
           setDisable(true);
           break;
         } else setDisable(false);
@@ -56,27 +79,22 @@ const AddBook = (props) => {
     }
   };
 
-  const resetData = () => {
-    setData(initialData);
-  };
-
-  const cancelError = () => setErrorMessage("");
-
   const submitAddBook = async (e) => {
     e.preventDefault();
-    const { hide, loading } = props;
+    const { loading, setError } = props;
     try {
-      //   await hide("add");
-      //   loading(true);
+      await loading(true);
       await axios({
         method: "POST",
         url: `${process.env.REACT_APP_BACKEND_URL}/api/books`,
         headers: { authorization: `Bearer ${auth.token}` },
         data,
       });
-      //   loading(false);
+      await resetData();
+      await loading(false);
     } catch (error) {
-      setErrorMessage(
+      console.log(error.response);
+      await setError(
         error.response ? error.response.data.message : "Server error"
       );
     }
@@ -84,9 +102,6 @@ const AddBook = (props) => {
 
   return (
     <React.Fragment>
-      {errorMessage && (
-        <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
-      )}
       <Typography variant="h6" gutterBottom>
         Provide book data
       </Typography>
@@ -124,6 +139,72 @@ const AddBook = (props) => {
               onChange={onDataChange}
               fullWidth
             />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl className={classes.formControl}>
+              <InputLabel shrink htmlFor="genre" required>
+                Genres
+              </InputLabel>
+              <Select
+                multiple
+                native
+                value={data.genre}
+                onChange={onDataChange}
+                inputProps={{
+                  id: "genre",
+                }}
+              >
+                {genres.map((genre) => (
+                  <option key={genre._id} value={genre._id}>
+                    {genre.name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl className={classes.formControl}>
+              <InputLabel shrink htmlFor="authors" required>
+                Authors
+              </InputLabel>
+              <Select
+                multiple
+                native
+                value={data.authors}
+                onChange={onDataChange}
+                inputProps={{
+                  id: "authors",
+                }}
+              >
+                {authors.map((author) => (
+                  <option key={author._id} value={author._id}>
+                    {`${author.name}, ${author.name}`}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl className={classes.formControl}>
+              <InputLabel htmlFor="language" required>
+                Age
+              </InputLabel>
+              <Select
+                native
+                value={data.language}
+                onChange={onDataChange}
+                inputProps={{
+                  name: "language",
+                  id: "language",
+                }}
+              >
+                <option value="polish">Polish</option>
+                <option value="english">English</option>
+                <option value="french">French</option>
+                <option value="spanish">Spanish</option>
+                <option value="german">German</option>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12}>
             <TextField

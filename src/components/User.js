@@ -160,11 +160,7 @@ const User = (props) => {
                 >
                   {`${user.surname}, ${user.name}`}
                 </Typography>
-                <Typography
-                  className={classes.pos}
-                  color="textSecondary"
-                  className={classes.lines}
-                >
+                <Typography color="textSecondary" className={classes.lines}>
                   {user.archived ? "archived" : "active"}
                 </Typography>
                 <Typography
