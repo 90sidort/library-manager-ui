@@ -24,6 +24,9 @@ const useStyles = makeStyles(() => ({
   buttonGroup: {
     marginLeft: "auto",
   },
+  select: {
+    width: "100%",
+  },
 }));
 
 const AddBook = (props) => {
@@ -141,7 +144,7 @@ const AddBook = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.select}>
               <InputLabel shrink htmlFor="genre" required>
                 Genres
               </InputLabel>
@@ -163,12 +166,13 @@ const AddBook = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.select}>
               <InputLabel shrink htmlFor="authors" required>
                 Authors
               </InputLabel>
               <Select
                 multiple
+                className={classes.select}
                 native
                 value={data.authors}
                 onChange={onDataChange}
@@ -185,7 +189,7 @@ const AddBook = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.select}>
               <InputLabel htmlFor="language" required>
                 Age
               </InputLabel>

@@ -17,9 +17,15 @@ import { AuthContext } from "../context/auth.context";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    minWidth: 275,
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: "3%",
-    height: "100%",
+  },
+  form: {
+    width: "90%",
+    marginTop: "1%",
+    margin: "auto !important",
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -126,6 +132,7 @@ const Books = () => {
           <Accordion
             expanded={expanded === "add"}
             onChange={handleChange("add")}
+            className={classes.form}
           >
             <AccordionSummary
               expandIcon={<ExpandMore />}
@@ -139,13 +146,17 @@ const Books = () => {
             </AccordionSummary>
             <AccordionDetails>
               {authors && genres && (
-                <Grid item xs={12}>
-                  <AddBook
-                    setError={setErrorMessage}
-                    loading={setLoading}
-                    authors={authors}
-                    genres={genres}
-                  />
+                <Grid container spacing={2} className={classes.root}>
+                  <Grid item xs={12} sm={6}>
+                    <div className={classes.form}>
+                      <AddBook
+                        setError={setErrorMessage}
+                        loading={setLoading}
+                        authors={authors}
+                        genres={genres}
+                      />
+                    </div>
+                  </Grid>
                 </Grid>
               )}
             </AccordionDetails>
@@ -153,6 +164,7 @@ const Books = () => {
           <Accordion
             expanded={expanded === "list"}
             onChange={handleChange("list")}
+            className={classes.form}
           >
             <AccordionSummary
               expandIcon={<ExpandMore />}
