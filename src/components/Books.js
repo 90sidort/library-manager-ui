@@ -72,6 +72,7 @@ const Books = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const loadBooks = async () => {
+    setLoading(true);
     try {
       const response = await axios({
         method: "GET",
@@ -80,10 +81,12 @@ const Books = () => {
         params: {
           page,
           limit,
+          ...search,
         },
       });
       setCount(response.data.count);
       setBooks(response.data.books);
+      setLoading(false);
     } catch (error) {
       setErrorMessage(
         error.response ? error.response.data.message : "Server error"
@@ -152,12 +155,17 @@ const Books = () => {
   };
 
   useEffect(() => {
-    setLoading(true);
+    const timer = setTimeout(() => {
+      loadBooks();
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [auth.token, limit, page, search]);
+
+  useEffect(() => {
     loadAuthors();
     loadGenres();
     loadBooks();
-    setLoading(false);
-  }, []);
+  }, [auth.token]);
 
   return (
     <div className={classes.root}>

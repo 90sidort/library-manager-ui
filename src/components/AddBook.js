@@ -96,7 +96,6 @@ const AddBook = (props) => {
       await resetData();
       await loading(false);
     } catch (error) {
-      console.log(error.response);
       await setError(
         error.response ? error.response.data.message : "Server error"
       );
@@ -191,7 +190,7 @@ const AddBook = (props) => {
           <Grid item xs={12}>
             <FormControl className={classes.select}>
               <InputLabel htmlFor="language" required>
-                Age
+                Language
               </InputLabel>
               <Select
                 native

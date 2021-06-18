@@ -16,7 +16,6 @@ import User from "./components/User";
 
 function App() {
   const { token, login, logout, userId, admin, userName } = useAuth();
-  console.log(token);
   let appRoutes;
 
   if (token)

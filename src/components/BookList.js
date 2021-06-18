@@ -56,8 +56,6 @@ const BookList = (props) => {
     count,
   } = props;
 
-  console.log(books);
-
   return (
     <Grid item xs={12} md={12}>
       <Typography variant="h6" className={classes.title}>
