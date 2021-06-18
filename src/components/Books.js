@@ -13,6 +13,7 @@ import { ExpandMore } from "@material-ui/icons";
 
 import SimpleModal from "./shared/SimpleModal";
 import AddBook from "./AddBook";
+import BookList from "./BookList";
 import { AuthContext } from "../context/auth.context";
 
 const useStyles = makeStyles((theme) => ({
@@ -46,14 +47,51 @@ const useStyles = makeStyles((theme) => ({
 const Books = () => {
   const classes = useStyles();
   const auth = useContext(AuthContext);
+  const initialSearch = {
+    title: "",
+    authors: [],
+    genre: [],
+    pageMax: 0,
+    pageMin: 0,
+    publishedMin: 0,
+    piblishedMax: 0,
+    language: "polish",
+    publisher: "",
+    available: true,
+    description: "",
+  };
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [authors, setAuthors] = useState(null);
+  const [books, setBooks] = useState(null);
   const [genres, setGenres] = useState(null);
+  const [search, setSearch] = useState(initialSearch);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
+  const [count, setCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const loadBooks = async () => {
+    try {
+      const response = await axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/books`,
+        headers: { authorization: `Bearer ${auth.token}` },
+        params: {
+          page,
+          limit,
+        },
+      });
+      setCount(response.data.count);
+      setBooks(response.data.books);
+    } catch (error) {
+      setErrorMessage(
+        error.response ? error.response.data.message : "Server error"
+      );
+    }
+  };
+
   const loadAuthors = async () => {
-    setLoading(true);
     try {
       const response = await axios({
         method: "GET",
@@ -65,7 +103,6 @@ const Books = () => {
         },
       });
       setAuthors(response.data.author);
-      setLoading(false);
     } catch (error) {
       setErrorMessage(
         error.response ? error.response.data.message : "Server error"
@@ -74,7 +111,6 @@ const Books = () => {
   };
 
   const loadGenres = async () => {
-    setLoading(true);
     try {
       const response = await axios({
         method: "GET",
@@ -86,7 +122,6 @@ const Books = () => {
         },
       });
       setGenres(response.data.genres);
-      setLoading(false);
     } catch (error) {
       setErrorMessage(
         error.response ? error.response.data.message : "Server error"
@@ -103,9 +138,25 @@ const Books = () => {
     setLoading(false);
   };
 
+  const handleBookSearch = (e) => {
+    const { id, value } = e.target;
+    setPage(1);
+    const newSearch = { ...search, [id]: value };
+    setSearch(newSearch);
+  };
+
+  const handleChangePage = (e, newPage) => setPage(newPage + 1);
+  const handleChangeRowsPerPage = (e) => {
+    setLimit(parseInt(e.target.value));
+    setPage(1);
+  };
+
   useEffect(() => {
+    setLoading(true);
     loadAuthors();
     loadGenres();
+    loadBooks();
+    setLoading(false);
   }, []);
 
   return (
@@ -177,11 +228,18 @@ const Books = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Typography>
-                Donec placerat, lectus sed mattis semper, neque lectus feugiat
-                lectus, varius pulvinar diam eros in elit. Pellentesque
-                convallis laoreet laoreet.
-              </Typography>
+              <BookList
+                setPage={setPage}
+                books={books}
+                search={search}
+                page={page}
+                limit={limit}
+                count={count}
+                bookSearch={handleBookSearch}
+                setLoading={setLoading}
+                pageChange={handleChangePage}
+                rowsChange={handleChangeRowsPerPage}
+              />
             </AccordionDetails>
           </Accordion>
         </React.Fragment>

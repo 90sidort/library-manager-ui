@@ -9,8 +9,8 @@ import {
 import { AccountCircle, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
-const SingleListItem = (props) => {
-  const { id, deleteUser } = props;
+const SingleListItemUser = (props) => {
+  const { id, deleteUser, link, surname, name } = props;
   return (
     <ListItem>
       <ListItemAvatar>
@@ -20,11 +20,11 @@ const SingleListItem = (props) => {
       </ListItemAvatar>
       <Link
         to={{
-          pathname: `${props.link}`,
+          pathname: `${link}`,
         }}
         style={{ textDecoration: "none", color: "black" }}
       >
-        <ListItemText primary={`${props.surname}, ${props.name}`} />{" "}
+        <ListItemText primary={`${surname}, ${name}`} />{" "}
       </Link>
       <ListItemSecondaryAction>
         <IconButton
@@ -39,4 +39,4 @@ const SingleListItem = (props) => {
   );
 };
 
-export default SingleListItem;
+export default SingleListItemUser;

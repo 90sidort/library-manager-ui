@@ -12,7 +12,7 @@ import {
 import { useHistory, useLocation } from "react-router-dom";
 
 import { AuthContext } from "../context/auth.context";
-import SingleListItem from "./shared/SingleListItem";
+import SingleListItemUser from "./shared/SingleListItemUser";
 import SimpleModal from "./shared/SimpleModal";
 
 const useStyles = makeStyles((theme) => ({
@@ -65,8 +65,8 @@ const Users = () => {
   };
   const [users, setUsers] = useState(null);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(25);
   const [count, setCount] = useState(0);
+  const [limit, setLimit] = useState(25);
   const [search, setSearch] = useState(readSearch());
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -194,7 +194,7 @@ const Users = () => {
               <List>
                 {users.length > 0 ? (
                   users.map((user) => (
-                    <SingleListItem
+                    <SingleListItemUser
                       key={user._id}
                       id={user._id}
                       name={user.name}
