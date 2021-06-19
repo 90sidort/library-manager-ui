@@ -50,20 +50,21 @@ const Books = () => {
   const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
+  const initialData = {
+    title: "",
+    authors: "all",
+    genre: "all",
+    pageMin: 0,
+    pageMax: 10000,
+    publishedMin: 1900,
+    publishedMax: 3000,
+    language: "polish",
+    publisher: "",
+    available: true,
+    description: "",
+  };
   const readSearch = () => {
-    const stateData = {
-      title: "",
-      authors: "all",
-      genre: "all",
-      pageMax: 0,
-      pageMin: 0,
-      publishedMin: 0,
-      piblishedMax: 0,
-      language: "polish",
-      publisher: "",
-      available: true,
-      description: "",
-    };
+    const stateData = initialData;
     if (location.search) {
       const searchQuery = location.search.substring(1);
       const queries = searchQuery.split("&");
@@ -72,7 +73,6 @@ const Books = () => {
         stateData[variables[0]] = variables[1];
       });
     }
-    console.log(stateData);
     return stateData;
   };
   const [expanded, setExpanded] = useState(false);
@@ -161,8 +161,19 @@ const Books = () => {
     setLoading(false);
   };
 
+  const resetData = () => {
+    setSearch(initialData);
+    history.push({
+      pathname: "/",
+      search: `page=1&limit=25&title=&authors=all&genre=all&pageMin=0&pageMax=10000&publishedMin=1900&publishedMax=3000&language=polish&publisher=&available=true&description=`,
+    });
+  };
+
   const handleBookSearch = (e) => {
-    const { id, value } = e.target;
+    let { value } = e.target;
+    const { id } = e.target;
+    console.log(value, id);
+    if (id === "available") value = value === "true" ? false : true;
     setPage(1);
     const newSearch = { ...search, [id]: value };
     setSearch(newSearch);
@@ -186,6 +197,8 @@ const Books = () => {
     loadGenres();
     loadBooks();
   }, [auth.token]);
+
+  console.log(search);
 
   return (
     <div className={classes.root}>
@@ -270,6 +283,7 @@ const Books = () => {
                   setLoading={setLoading}
                   pageChange={handleChangePage}
                   rowsChange={handleChangeRowsPerPage}
+                  resetData={resetData}
                 />
               )}
             </AccordionDetails>
