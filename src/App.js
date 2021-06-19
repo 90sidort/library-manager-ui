@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import { AuthContext } from "./context/auth.context";
 import { useAuth } from "./hooks/auth.hook";
@@ -30,7 +25,6 @@ function App() {
         <Route path="/users/:uid" exact={true}>
           <User />
         </Route>
-        <Redirect to="/" />
       </Switch>
     );
   else
@@ -39,7 +33,6 @@ function App() {
         <Route path="/sign" exact={true}>
           <Sign />
         </Route>
-        <Redirect to="/sign" />
       </Switch>
     );
 

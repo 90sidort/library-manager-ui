@@ -15,6 +15,7 @@ import SimpleModal from "./shared/SimpleModal";
 import AddBook from "./AddBook";
 import BookList from "./BookList";
 import { AuthContext } from "../context/auth.context";
+import { useHistory, useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,27 +46,41 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Books = () => {
+  const history = useHistory();
+  const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
-  const initialSearch = {
-    title: "",
-    authors: [],
-    genre: [],
-    pageMax: 0,
-    pageMin: 0,
-    publishedMin: 0,
-    piblishedMax: 0,
-    language: "polish",
-    publisher: "",
-    available: true,
-    description: "",
+  const readSearch = () => {
+    const stateData = {
+      title: "",
+      authors: "",
+      genre: "",
+      pageMax: 0,
+      pageMin: 0,
+      publishedMin: 0,
+      piblishedMax: 0,
+      language: "polish",
+      publisher: "",
+      available: true,
+      description: "",
+    };
+    if (location.search) {
+      const searchQuery = location.search.substring(1);
+      const queries = searchQuery.split("&");
+      queries.forEach((query) => {
+        const variables = query.split("=");
+        stateData[variables[0]] = variables[1];
+      });
+    }
+    console.log(stateData);
+    return stateData;
   };
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [authors, setAuthors] = useState(null);
   const [books, setBooks] = useState(null);
   const [genres, setGenres] = useState(null);
-  const [search, setSearch] = useState(initialSearch);
+  const [search, setSearch] = useState(readSearch());
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
   const [count, setCount] = useState(0);
@@ -86,6 +101,11 @@ const Books = () => {
       });
       setCount(response.data.count);
       setBooks(response.data.books);
+      const newRoute = response.request.responseURL.split("?")[1];
+      history.push({
+        pathname: "/",
+        search: `${newRoute}`,
+      });
       setLoading(false);
     } catch (error) {
       setErrorMessage(
