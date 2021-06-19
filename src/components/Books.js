@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Accordion,
+  TextField,
+  TablePagination,
   AccordionDetails,
   AccordionSummary,
   Typography,
@@ -15,6 +17,7 @@ import SimpleModal from "./shared/SimpleModal";
 import AddBook from "./AddBook";
 import BookList from "./BookList";
 import { AuthContext } from "../context/auth.context";
+import { useHistory, useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,10 +48,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Books = () => {
+  const history = useHistory();
+  const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
   const initialSearch = {
-    title: "",
+    title: "forecast",
     authors: [],
     genre: [],
     pageMax: 0,
@@ -86,6 +91,12 @@ const Books = () => {
       });
       setCount(response.data.count);
       setBooks(response.data.books);
+
+      const newRoute = response.request.responseURL.split("?")[1];
+      history.push({
+        pathname: "/",
+        search: `${newRoute}`,
+      });
       setLoading(false);
     } catch (error) {
       setErrorMessage(
@@ -157,6 +168,7 @@ const Books = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       loadBooks();
+      handleChange("list");
     }, 1000);
     return () => clearTimeout(timer);
   }, [auth.token, limit, page, search]);
@@ -165,93 +177,152 @@ const Books = () => {
     loadAuthors();
     loadGenres();
     loadBooks();
-  }, [auth.token]);
+  }, []);
+
+  console.log(authors, genres);
 
   return (
     <div className={classes.root}>
       {errorMessage && (
         <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
       )}
-      {loading && !errorMessage && (
-        <Grid container spacing={2} className={classes.formGrid}>
-          <Grid item xs={12} className={classes.formGrid}>
-            <CircularProgress
-              color="secondary"
-              style={{
-                width: "20%",
-                height: "20%",
-                margin: "auto",
-              }}
-            />
-          </Grid>
-        </Grid>
-      )}
-      {!loading && (
-        <React.Fragment>
-          <Accordion
-            expanded={expanded === "add"}
-            onChange={handleChange("add")}
-            className={classes.form}
+      <React.Fragment>
+        <Accordion
+          expanded={expanded === "add"}
+          onChange={handleChange("add")}
+          className={classes.form}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMore />}
+            aria-controls="add-content"
+            id="add-header"
           >
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-              aria-controls="add-content"
-              id="add-header"
-            >
-              <Typography className={classes.heading}>Add</Typography>
-              <Typography className={classes.secondaryHeading}>
-                Add new book to the database
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {authors && genres && (
-                <Grid container spacing={2} className={classes.root}>
-                  <Grid item xs={12} sm={6}>
-                    <div className={classes.form}>
-                      <AddBook
-                        setError={setErrorMessage}
-                        loading={setLoading}
-                        authors={authors}
-                        genres={genres}
-                      />
-                    </div>
-                  </Grid>
+            <Typography className={classes.heading}>Add</Typography>
+            <Typography className={classes.secondaryHeading}>
+              Add new book to the database
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {loading && !errorMessage && (
+              <Grid container spacing={2} className={classes.formGrid}>
+                <Grid item xs={12} className={classes.formGrid}>
+                  <CircularProgress
+                    color="secondary"
+                    style={{
+                      width: "20%",
+                      height: "20%",
+                      margin: "auto",
+                    }}
+                  />
                 </Grid>
-              )}
-            </AccordionDetails>
-          </Accordion>
-          <Accordion
-            expanded={expanded === "list"}
-            onChange={handleChange("list")}
-            className={classes.form}
+              </Grid>
+            )}
+            {authors && genres && !loading && (
+              <Grid container spacing={2} className={classes.root}>
+                <Grid item xs={12} sm={6}>
+                  <div className={classes.form}>
+                    <AddBook
+                      setError={setErrorMessage}
+                      loading={setLoading}
+                      authors={authors}
+                      genres={genres}
+                    />
+                  </div>
+                </Grid>
+              </Grid>
+            )}
+          </AccordionDetails>
+        </Accordion>
+        <Accordion
+          expanded={expanded === "list"}
+          onChange={handleChange("list")}
+          className={classes.form}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMore />}
+            aria-controls="list-content"
+            id="list-header"
           >
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-              aria-controls="list-content"
-              id="list-header"
-            >
-              <Typography className={classes.heading}>Books</Typography>
-              <Typography className={classes.secondaryHeading}>
-                Search for books
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <BookList
-                setPage={setPage}
-                books={books}
-                search={search}
-                page={page}
-                limit={limit}
-                count={count}
-                bookSearch={handleBookSearch}
-                setLoading={setLoading}
-                pageChange={handleChangePage}
-                rowsChange={handleChangeRowsPerPage}
-              />
-            </AccordionDetails>
-          </Accordion>
-        </React.Fragment>
-      )}
+            <Typography className={classes.heading}>Books</Typography>
+            <Typography className={classes.secondaryHeading}>
+              Search for books
+            </Typography>
+          </AccordionSummary>
+          {loading && !errorMessage && (
+            <Grid container spacing={2} className={classes.formGrid}>
+              <Grid item xs={12} className={classes.formGrid}>
+                <CircularProgress
+                  color="secondary"
+                  style={{
+                    width: "20%",
+                    height: "20%",
+                    margin: "auto",
+                  }}
+                />
+              </Grid>
+            </Grid>
+          )}
+          <AccordionDetails>
+            {authors && genres && books && !loading && (
+              <Grid item xs={12} md={12}>
+                <Typography variant="h6" className={classes.title}>
+                  Books
+                </Typography>
+                <form className={classes.form} noValidate autoComplete="off">
+                  <TextField
+                    id="title"
+                    label="Title"
+                    variant="outlined"
+                    onChange={handleBookSearch}
+                    value={search.title}
+                    // className={classes.fields}
+                  />
+                  <TextField
+                    id="language"
+                    label="Language"
+                    variant="outlined"
+                    onChange={handleBookSearch}
+                    value={search.language}
+                    // className={classes.fields}
+                  />
+                  <TextField
+                    id="publisher"
+                    label="Publisher"
+                    variant="outlined"
+                    onChange={handleBookSearch}
+                    value={search.publisher}
+                    // className={classes.fields}
+                  />
+                </form>
+                <TablePagination
+                  component="div"
+                  page={page - 1}
+                  rowsPerPage={limit}
+                  count={count}
+                  onChangePage={handleChangePage}
+                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
+                <div className={classes.demo}>
+                  {books && (
+                    <BookList
+                      // setPage={setPage}
+                      books={books}
+                      // search={search}
+                      // page={page}
+                      // limit={limit}
+                      // count={count}
+                      // bookSearch={handleBookSearch}
+                      // setLoading={setLoading}
+                      // pageChange={handleChangePage}
+                      // rowsChange={handleChangeRowsPerPage}
+                    />
+                  )}
+                </div>
+              </Grid>
+            )}
+          </AccordionDetails>
+        </Accordion>
+      </React.Fragment>
     </div>
   );
 };

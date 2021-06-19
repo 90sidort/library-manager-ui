@@ -30,7 +30,6 @@ function App() {
         <Route path="/users/:uid" exact={true}>
           <User />
         </Route>
-        <Redirect to="/" />
       </Switch>
     );
   else
@@ -39,10 +38,8 @@ function App() {
         <Route path="/sign" exact={true}>
           <Sign />
         </Route>
-        <Redirect to="/sign" />
       </Switch>
     );
-
   return (
     <AuthContext.Provider
       value={{

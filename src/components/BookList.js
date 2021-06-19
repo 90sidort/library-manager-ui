@@ -1,14 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  ListItem,
-  ListItemText,
-  Grid,
-  TextField,
-  TablePagination,
-  Typography,
-  List,
-  makeStyles,
-} from "@material-ui/core";
+import { List, makeStyles } from "@material-ui/core";
 
 import { AuthContext } from "../context/auth.context";
 import SingleListItemBook from "./shared/SingleListItemBook";
@@ -41,81 +32,38 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BookList = (props) => {
-  const classes = useStyles();
-  const auth = useContext(AuthContext);
+  // const classes = useStyles();
+  // const auth = useContext(AuthContext);
   const {
-    setPage,
-    setLoading,
+    // setPage,
+    // setLoading,
     books,
-    bookSearch,
-    rowsChange,
-    pageChange,
-    limit,
-    page,
-    search,
-    count,
+    // bookSearch,
+    // rowsChange,
+    // pageChange,
+    // limit,
+    // page,
+    // search,
+    // count,
   } = props;
 
   return (
-    <Grid item xs={12} md={12}>
-      <Typography variant="h6" className={classes.title}>
-        Books
-      </Typography>
-      <form className={classes.form} noValidate autoComplete="off">
-        <TextField
-          id="title"
-          label="Title"
-          variant="outlined"
-          onChange={bookSearch}
-          value={search.title}
-          // className={classes.fields}
-        />
-        <TextField
-          id="language"
-          label="Language"
-          variant="outlined"
-          onChange={bookSearch}
-          value={search.language}
-          // className={classes.fields}
-        />
-        <TextField
-          id="publisher"
-          label="Publisher"
-          variant="outlined"
-          onChange={bookSearch}
-          value={search.publisher}
-          // className={classes.fields}
-        />
-      </form>
-      <TablePagination
-        component="div"
-        page={page - 1}
-        rowsPerPage={limit}
-        count={count}
-        onChangePage={pageChange}
-        onChangeRowsPerPage={rowsChange}
-      />
-      <div className={classes.demo}>
-        {books && (
-          <List>
-            {books.length > 0 ? (
-              books.map((book) => (
-                <SingleListItemBook
-                  key={book._id}
-                  id={book._id}
-                  title={book.title}
-                  published={book.published}
-                  authors={book.authors}
-                  link={`books/${book._id}`}
-                />
-              ))
-            ) : (
-              <p>No users match search criteria</p>
-            )}
-          </List>
-        )}
-      </div>
-    </Grid>
+    <List>
+      {books.length > 0 ? (
+        books.map((book) => (
+          <SingleListItemBook
+            key={book._id}
+            id={book._id}
+            title={book.title}
+            published={book.published}
+            authors={book.authors}
+            link={`books/${book._id}`}
+          />
+        ))
+      ) : (
+        <p>No books match search criteria</p>
+      )}
+    </List>
   );
 };
 
