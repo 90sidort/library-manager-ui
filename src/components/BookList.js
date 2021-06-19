@@ -8,10 +8,13 @@ import {
   Typography,
   List,
   makeStyles,
+  Select,
+  InputLabel,
 } from "@material-ui/core";
 
 import { AuthContext } from "../context/auth.context";
 import SingleListItemBook from "./shared/SingleListItemBook";
+import { FormControl } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,7 +57,19 @@ const BookList = (props) => {
     page,
     search,
     count,
+    authors,
+    genres,
   } = props;
+
+  const allOptions = <option value="all">{`All`}</option>;
+  const optionsGenres = genres.map((genre) => (
+    <option value={genre._id}>{`${genre.name}`}</option>
+  ));
+  const optionsAuthors = authors.map((author) => (
+    <option value={author._id}>{`${author.surname}, ${author.name}`}</option>
+  ));
+  optionsGenres.unshift(allOptions);
+  optionsAuthors.unshift(allOptions);
 
   return (
     <Grid item xs={12} md={12}>
@@ -70,6 +85,34 @@ const BookList = (props) => {
           value={search.title}
           // className={classes.fields}
         />
+        <FormControl className={classes.select}>
+          <InputLabel htmlFor="genre">Genre</InputLabel>
+          <Select
+            native
+            value={search.genre}
+            onChange={bookSearch}
+            inputProps={{
+              name: "genre",
+              id: "genre",
+            }}
+          >
+            {optionsGenres}
+          </Select>
+        </FormControl>
+        <FormControl className={classes.select}>
+          <InputLabel htmlFor="authors">Author</InputLabel>
+          <Select
+            native
+            value={search.authors}
+            onChange={bookSearch}
+            inputProps={{
+              name: "authors",
+              id: "authors",
+            }}
+          >
+            {optionsAuthors}
+          </Select>
+        </FormControl>
         <TextField
           id="language"
           label="Language"

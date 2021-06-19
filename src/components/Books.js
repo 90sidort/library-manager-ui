@@ -53,8 +53,8 @@ const Books = () => {
   const readSearch = () => {
     const stateData = {
       title: "",
-      authors: "",
-      genre: "",
+      authors: "all",
+      genre: "all",
       pageMax: 0,
       pageMin: 0,
       publishedMin: 0,
@@ -256,18 +256,22 @@ const Books = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <BookList
-                setPage={setPage}
-                books={books}
-                search={search}
-                page={page}
-                limit={limit}
-                count={count}
-                bookSearch={handleBookSearch}
-                setLoading={setLoading}
-                pageChange={handleChangePage}
-                rowsChange={handleChangeRowsPerPage}
-              />
+              {books && authors && genres && (
+                <BookList
+                  setPage={setPage}
+                  authors={authors}
+                  genres={genres}
+                  books={books}
+                  search={search}
+                  page={page}
+                  limit={limit}
+                  count={count}
+                  bookSearch={handleBookSearch}
+                  setLoading={setLoading}
+                  pageChange={handleChangePage}
+                  rowsChange={handleChangeRowsPerPage}
+                />
+              )}
             </AccordionDetails>
           </Accordion>
         </React.Fragment>
