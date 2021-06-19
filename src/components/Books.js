@@ -64,7 +64,7 @@ const Books = () => {
     description: "",
   };
   const readSearch = () => {
-    const stateData = initialData;
+    const stateData = { ...initialData };
     if (location.search) {
       const searchQuery = location.search.substring(1);
       const queries = searchQuery.split("&");
@@ -165,7 +165,6 @@ const Books = () => {
     setSearch(initialData);
     history.push({
       pathname: "/",
-      search: `page=1&limit=25&title=&authors=all&genre=all&pageMin=0&pageMax=10000&publishedMin=1900&publishedMax=3000&language=polish&publisher=&available=true&description=`,
     });
   };
 
@@ -186,6 +185,7 @@ const Books = () => {
   };
 
   useEffect(() => {
+    console.log(search);
     const timer = setTimeout(() => {
       loadBooks();
     }, 1000);
