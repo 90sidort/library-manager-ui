@@ -75,7 +75,10 @@ const User = (props) => {
     showBorrows(false);
     showEdit(!edit);
   };
-  const cancelError = () => setErrorMessage("");
+  const cancelError = () => {
+    setErrorMessage("");
+    setLoading(false);
+  };
 
   const updateUser = (user) => {
     const { name, surname, email, about, _id } = user;

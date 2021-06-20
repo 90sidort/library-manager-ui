@@ -1,7 +1,5 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import {
-  ListItem,
-  ListItemText,
   Grid,
   TextField,
   TablePagination,
@@ -15,9 +13,9 @@ import {
   Button,
 } from "@material-ui/core";
 
-import { AuthContext } from "../context/auth.context";
 import SingleListItemBook from "./shared/SingleListItemBook";
 import { FormControl } from "@material-ui/core";
+import allowedLanguages from "../utils/languages";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,11 +30,10 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 10,
     alignItems: "center",
     justifyContent: "center",
-    display: "flex",
   },
   fields: {
-    margin: "auto",
-    width: "50%",
+    margin: theme.spacing(1),
+    width: "35ch",
   },
   demo: {
     backgroundColor: theme.palette.background.paper,
@@ -48,10 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 const BookList = (props) => {
   const classes = useStyles();
-  const auth = useContext(AuthContext);
   const {
-    setPage,
-    setLoading,
     books,
     bookSearch,
     rowsChange,
@@ -66,6 +60,9 @@ const BookList = (props) => {
   } = props;
 
   const allOptions = <option value="all">{`All`}</option>;
+  const optionsLanguages = allowedLanguages.map((language, i) => (
+    <option key={i} value={language}>{`${language}`}</option>
+  ));
   const optionsGenres = genres.map((genre, i) => (
     <option key={i} value={genre._id}>{`${genre.name}`}</option>
   ));
@@ -77,8 +74,8 @@ const BookList = (props) => {
   ));
   optionsGenres.unshift(allOptions);
   optionsAuthors.unshift(allOptions);
+  optionsLanguages.unshift(allOptions);
 
-  console.log(search);
   return (
     <Grid item xs={12} md={12}>
       <Typography variant="h6" className={classes.title}>
@@ -99,21 +96,9 @@ const BookList = (props) => {
           variant="outlined"
           onChange={bookSearch}
           value={search.title}
-          // className={classes.fields}
+          className={classes.fields}
         />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={search.available}
-              onChange={bookSearch}
-              name="available"
-              id="available"
-              value={search.available}
-            />
-          }
-          label="Available"
-        />
-        <FormControl className={classes.select}>
+        <FormControl className={classes.fields}>
           <InputLabel htmlFor="genre">Genre</InputLabel>
           <Select
             native
@@ -128,7 +113,7 @@ const BookList = (props) => {
             {optionsGenres}
           </Select>
         </FormControl>
-        <FormControl className={classes.select}>
+        <FormControl className={classes.fields}>
           <InputLabel htmlFor="authors">Author</InputLabel>
           <Select
             native
@@ -143,7 +128,7 @@ const BookList = (props) => {
             {optionsAuthors}
           </Select>
         </FormControl>
-        <FormControl className={classes.select}>
+        <FormControl className={classes.fields}>
           <InputLabel htmlFor="language">Language</InputLabel>
           <Select
             native
@@ -155,11 +140,7 @@ const BookList = (props) => {
               id: "language",
             }}
           >
-            <option value="polish">Polish</option>
-            <option value="english">English</option>
-            <option value="french">French</option>
-            <option value="spanish">Spanish</option>
-            <option value="german">German</option>
+            {optionsLanguages}
           </Select>
         </FormControl>
         <TextField
@@ -169,7 +150,7 @@ const BookList = (props) => {
           type="number"
           onChange={bookSearch}
           value={search.pageMin}
-          // className={classes.fields}
+          className={classes.fields}
         />
         <TextField
           id="pageMax"
@@ -178,7 +159,7 @@ const BookList = (props) => {
           type="number"
           onChange={bookSearch}
           value={search.pageMax}
-          // className={classes.fields}
+          className={classes.fields}
         />
         <TextField
           id="publisher"
@@ -186,7 +167,7 @@ const BookList = (props) => {
           variant="outlined"
           onChange={bookSearch}
           value={search.publisher}
-          // className={classes.fields}
+          className={classes.fields}
         />
         <TextField
           id="publishedMin"
@@ -195,7 +176,7 @@ const BookList = (props) => {
           onChange={bookSearch}
           value={search.publishedMin}
           type="number"
-          // className={classes.fields}
+          className={classes.fields}
         />
         <TextField
           id="publishedMax"
@@ -204,7 +185,20 @@ const BookList = (props) => {
           type="number"
           onChange={bookSearch}
           value={search.publishedMax}
-          // className={classes.fields}
+          className={classes.fields}
+        />
+        <FormControlLabel
+          className={classes.fields}
+          control={
+            <Checkbox
+              checked={search.available}
+              onChange={bookSearch}
+              name="available"
+              id="available"
+              value={search.available}
+            />
+          }
+          label="Available"
         />
       </form>
       <TablePagination
@@ -219,10 +213,9 @@ const BookList = (props) => {
         {books && (
           <List>
             {books.length > 0 ? (
-              books.map((book, i) => (
+              books.map((book) => (
                 <SingleListItemBook
-                  key={i}
-                  id={book._id}
+                  key={book._id}
                   title={book.title}
                   published={book.published}
                   authors={book.authors}

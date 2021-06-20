@@ -8,6 +8,7 @@ import Books from "./components/Books";
 import Users from "./components/Users";
 import ButtonAppBar from "./components/shared/Navigation";
 import User from "./components/User";
+import Book from "./components/Book";
 
 function App() {
   const { token, login, logout, userId, admin, userName } = useAuth();
@@ -24,6 +25,9 @@ function App() {
         </Route>
         <Route path="/users/:uid" exact={true}>
           <User />
+        </Route>
+        <Route path="/books/:bid" exact={true}>
+          <Book />
         </Route>
       </Switch>
     );

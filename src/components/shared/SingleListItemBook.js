@@ -10,7 +10,7 @@ import { MenuBook, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
 const SingleListItemBook = (props) => {
-  const { id, link, title, published, authors } = props;
+  const { link, title, published, authors } = props;
   const authorsString = (authors) => {
     let authorsReady = ``;
     authors.forEach((author) => {
