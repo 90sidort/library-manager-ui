@@ -75,6 +75,7 @@ const BookList = (props) => {
   optionsGenres.unshift(allOptions);
   optionsAuthors.unshift(allOptions);
   optionsLanguages.unshift(allOptions);
+  console.log(books);
 
   return (
     <Grid item xs={12} md={12}>

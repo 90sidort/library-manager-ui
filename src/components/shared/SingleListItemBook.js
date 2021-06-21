@@ -10,10 +10,11 @@ import { MenuBook, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
 const SingleListItemBook = (props) => {
-  const { link, title, published, authors } = props;
+  const { link, title, published, authors, fromUser } = props;
   const authorsString = (authors) => {
     let authorsReady = ``;
     authors.forEach((author) => {
+      console.log(author);
       authorsReady = `${authorsReady} ${author.name} ${author.surname}; `;
     });
     authorsReady.trim();
@@ -32,15 +33,17 @@ const SingleListItemBook = (props) => {
         }}
         style={{ textDecoration: "none", color: "black" }}
       >
-        <ListItemText primary={`${title}`} />{" "}
-        <ListItemText secondary={`${authorsString(authors)}`} />{" "}
-        <ListItemText secondary={`${published}`} />{" "}
+        <ListItemText primary={`${title}`} />
+        {!fromUser && <ListItemText secondary={`${authorsString(authors)}`} />}
+        {!fromUser && <ListItemText secondary={`${published}`} />}
       </Link>
-      <ListItemSecondaryAction>
-        <IconButton edge="end" aria-label="delete">
-          <Delete />
-        </IconButton>
-      </ListItemSecondaryAction>
+      {!fromUser && (
+        <ListItemSecondaryAction>
+          <IconButton edge="end" aria-label="delete">
+            <Delete />
+          </IconButton>
+        </ListItemSecondaryAction>
+      )}
     </ListItem>
   );
 };

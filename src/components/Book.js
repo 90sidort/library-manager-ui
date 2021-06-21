@@ -34,10 +34,15 @@ const Book = (props) => {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [edit, showEdit] = useState(false);
 
   const cancelError = () => {
     setErrorMessage("");
     setLoading(false);
+  };
+
+  const showForm = () => {
+    showEdit(!edit);
   };
 
   const getBook = async () => {
@@ -153,8 +158,11 @@ const Book = (props) => {
                 </Typography>
                 {book && (
                   <CardActions>
-                    {auth.admin && <Button size="small">Borrower</Button>}
-                    {auth.admin && <Button size="small">Edit book data</Button>}
+                    {auth.admin && (
+                      <Button size="small" onClick={showForm}>
+                        Edit book data
+                      </Button>
+                    )}
                     <Button size="small" onClick={() => history.goBack()}>
                       Go back
                     </Button>

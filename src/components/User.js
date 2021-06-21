@@ -16,7 +16,7 @@ import { useLocation } from "react-router";
 import { AuthContext } from "../context/auth.context";
 import UserEdit from "./UserEdit";
 import SimpleModal from "./shared/SimpleModal";
-import BookList from "./BookList";
+import SingleListItemBook from "./shared/SingleListItemBook";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
   },
   borrowings: {
     width: "100%",
-    maxWidth: 360,
     marginTop: "1%",
     backgroundColor: theme.palette.background.paper,
   },
@@ -213,7 +212,20 @@ const User = (props) => {
         <Grid container spacing={2} className={classes.root}>
           <Grid item xs={12} sm={6}>
             <div className={classes.borrowings}>
-              <BookList borrowed={user.borrowed} />
+              {user.borrowed.length > 0 ? (
+                user.borrowed.map((borrowing) => (
+                  <SingleListItemBook
+                    key={borrowing.book._id}
+                    title={borrowing.book.title}
+                    published={borrowing.book.published}
+                    authors={borrowing.book.authors}
+                    link={`/books/${borrowing.book._id}`}
+                    fromUser={true}
+                  />
+                ))
+              ) : (
+                <p>No borrowings</p>
+              )}
             </div>
           </Grid>
         </Grid>
