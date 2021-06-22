@@ -3,12 +3,13 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import { AuthContext } from "./context/auth.context";
 import { useAuth } from "./hooks/auth.hook";
-import Sign from "./components/Sign";
+// import Sign from "./components/Sign";
 import Books from "./components/Books";
 import Users from "./components/Users";
 import ButtonAppBar from "./components/shared/Navigation";
 import User from "./components/User";
 import Book from "./components/Book";
+import SignUp from "./components/Sign/SignUp";
 
 function App() {
   const { token, login, logout, userId, admin, userName } = useAuth();
@@ -34,8 +35,8 @@ function App() {
   else
     appRoutes = (
       <Switch>
-        <Route path="/sign" exact={true}>
-          <Sign />
+        <Route path="/signup" exact={true}>
+          <SignUp />
         </Route>
       </Switch>
     );
