@@ -79,17 +79,17 @@ export default function ButtonAppBar() {
                   <Public className={classes.icon} color="inherit" />
                 </Link>
               </Tooltip>
-              <Tooltip title="Genres" aria-label="sign">
+              <Tooltip title="Genres" aria-label="genres">
                 <Link to="/genres">
                   <Category className={classes.icon} color="inherit" />
                 </Link>
               </Tooltip>
-              <Tooltip title="Reviews" aria-label="sign">
+              <Tooltip title="Reviews" aria-label="reviews">
                 <Link to="/reviews">
                   <RateReview className={classes.icon} color="inherit" />
                 </Link>
               </Tooltip>
-              <Tooltip title="Logout" aria-label="sign">
+              <Tooltip title="Logout" aria-label="logout">
                 <Button onClick={auth.logout}>
                   <ExitToApp className={classes.icon} color="inherit" />
                 </Button>
@@ -97,7 +97,7 @@ export default function ButtonAppBar() {
             </React.Fragment>
           ) : (
             <Tooltip title="Sign" aria-label="sign">
-              <Link to="/sign">
+              <Link to="/signin">
                 <VpnKey className={classes.icon} color="inherit" />
               </Link>
             </Tooltip>

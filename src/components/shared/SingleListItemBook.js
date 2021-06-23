@@ -14,7 +14,6 @@ const SingleListItemBook = (props) => {
   const authorsString = (authors) => {
     let authorsReady = ``;
     authors.forEach((author) => {
-      console.log(author);
       authorsReady = `${authorsReady} ${author.name} ${author.surname}; `;
     });
     authorsReady.trim();

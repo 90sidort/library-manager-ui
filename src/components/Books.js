@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import {
   Accordion,
   AccordionDetails,
@@ -8,97 +7,44 @@ import {
   CircularProgress,
   Grid,
 } from "@material-ui/core";
-import axios from "axios";
+import { useHistory, useLocation } from "react-router-dom";
 import { ExpandMore } from "@material-ui/icons";
 
 import SimpleModal from "./shared/SimpleModal";
 import AddBook from "./AddBook";
 import BookList from "./BookList";
+import useStyles from "../styles/books.styles";
 import { AuthContext } from "../context/auth.context";
-import { useHistory, useLocation } from "react-router-dom";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    minWidth: 275,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: "3%",
-  },
-  form: {
-    width: "90%",
-    marginTop: "1%",
-    margin: "auto !important",
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: "33.33%",
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
-  formGrid: {
-    alignItems: "center",
-    justifyContent: "center",
-    display: "flex",
-  },
-}));
+import { useHttp } from "../hooks/http.hook";
+import { initialSearch, initialDataAdd } from "../utils/books.utils";
+import { readSearch } from "../utils/search.utils";
 
 const Books = () => {
   const history = useHistory();
   const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
-  const initialData = {
-    title: "",
-    authors: "all",
-    genre: "all",
-    pageMin: 0,
-    pageMax: 10000,
-    publishedMin: 1900,
-    publishedMax: 3000,
-    language: "polish",
-    publisher: "",
-    available: true,
-    description: "",
-  };
-  const readSearch = () => {
-    const stateData = { ...initialData };
-    if (location.search) {
-      const searchQuery = location.search.substring(1);
-      const queries = searchQuery.split("&");
-      queries.forEach((query) => {
-        const variables = query.split("=");
-        stateData[variables[0]] = variables[1];
-      });
-    }
-    return stateData;
-  };
   const [expanded, setExpanded] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [authors, setAuthors] = useState(null);
   const [books, setBooks] = useState(null);
   const [genres, setGenres] = useState(null);
-  const [search, setSearch] = useState(readSearch());
+  const [search, setSearch] = useState(readSearch(location, initialSearch));
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
   const [count, setCount] = useState(0);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [dataAdd, setDataAdd] = useState(initialDataAdd);
+  const [disable, setDisable] = useState(true);
+  const { loading, errorMessage, sendRequest, clearError } = useHttp();
 
   const loadBooks = async () => {
-    setLoading(true);
     try {
-      const response = await axios({
-        method: "GET",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/books`,
-        headers: { authorization: `Bearer ${auth.token}` },
-        params: {
-          page,
-          limit,
-          ...search,
-        },
-      });
+      const response = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/books`,
+        "GET",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        { page, limit, ...search }
+      );
       setCount(response.data.count);
       setBooks(response.data.books);
       const newRoute = response.request.responseURL.split("?")[1];
@@ -106,78 +52,98 @@ const Books = () => {
         pathname: "/",
         search: `${newRoute}`,
       });
-      setLoading(false);
-    } catch (error) {
-      setErrorMessage(
-        error.response ? error.response.data.message : "Server error"
-      );
-    }
+    } catch (error) {}
   };
-
   const loadAuthors = async () => {
     try {
-      const response = await axios({
-        method: "GET",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/authors`,
-        headers: { authorization: `Bearer ${auth.token}` },
-        params: {
-          page: 1,
-          limit: 9999,
-        },
-      });
-      setAuthors(response.data.author);
-    } catch (error) {
-      setErrorMessage(
-        error.response ? error.response.data.message : "Server error"
+      const response = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/authors`,
+        "GET",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        { page: 1, limit: 9999 }
       );
-    }
+      setAuthors(response.data.author);
+    } catch (error) {}
   };
-
   const loadGenres = async () => {
     try {
-      const response = await axios({
-        method: "GET",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/genres`,
-        headers: { authorization: `Bearer ${auth.token}` },
-        params: {
-          page: 1,
-          limit: 9999,
-        },
-      });
-      setGenres(response.data.genres);
-    } catch (error) {
-      setErrorMessage(
-        error.response ? error.response.data.message : "Server error"
+      const response = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/genres`,
+        "GET",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        { page: 1, limit: 9999 }
       );
-    }
+      setGenres(response.data.genres);
+    } catch (error) {}
+  };
+  const submitAddBook = async (e) => {
+    e.preventDefault();
+    try {
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/books`,
+        "POST",
+        dataAdd,
+        { authorization: `Bearer ${auth.token}` },
+        null
+      );
+      resetDataAdd();
+      resetData();
+    } catch (error) {}
   };
 
+  const resetDataAdd = () => {
+    setDataAdd(initialDataAdd);
+    setDisable(true);
+  };
+
+  const onDataChange = (e) => {
+    let { value } = e.target;
+    const { id, options } = e.target;
+    if (id === "pages" || id === "published") value = parseInt(value);
+    else if (id === "available") value = value === "true" ? false : true;
+    if (id === "genre" || id === "authors") {
+      value = [];
+      for (let i = 0, l = options.length; i < l; i += 1) {
+        if (options[i].selected) {
+          value.push(options[i].value);
+        }
+      }
+    }
+    const newDataAdd = { ...dataAdd, [id]: value };
+    setDataAdd(newDataAdd);
+    for (const [key, value] of Object.entries(newDataAdd)) {
+      if (key !== "description") {
+        if (
+          value === "" ||
+          value === null ||
+          value === undefined ||
+          (Array.isArray(value) && value.length < 1)
+        ) {
+          setDisable(true);
+          break;
+        } else setDisable(false);
+      }
+    }
+  };
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-
-  const cancelError = () => {
-    setErrorMessage("");
-    setLoading(false);
-  };
-
   const resetData = () => {
-    setSearch(initialData);
+    setSearch(initialSearch);
     history.push({
       pathname: "/",
     });
   };
-
   const handleBookSearch = (e) => {
     let { value } = e.target;
     const { id } = e.target;
-    console.log(value, id);
     if (id === "available") value = value === "true" ? false : true;
     setPage(1);
     const newSearch = { ...search, [id]: value };
     setSearch(newSearch);
   };
-
   const handleChangePage = (e, newPage) => setPage(newPage + 1);
   const handleChangeRowsPerPage = (e) => {
     setLimit(parseInt(e.target.value));
@@ -185,7 +151,6 @@ const Books = () => {
   };
 
   useEffect(() => {
-    console.log(search);
     const timer = setTimeout(() => {
       loadBooks();
     }, 1000);
@@ -198,12 +163,10 @@ const Books = () => {
     loadBooks();
   }, [auth.token]);
 
-  console.log(search);
-
   return (
     <div className={classes.root}>
       {errorMessage && (
-        <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
+        <SimpleModal errorMessage={errorMessage} cancelError={clearError} />
       )}
       {loading && !errorMessage && (
         <Grid container spacing={2} className={classes.formGrid}>
@@ -242,10 +205,13 @@ const Books = () => {
                   <Grid item xs={12} sm={6}>
                     <div className={classes.form}>
                       <AddBook
-                        setError={setErrorMessage}
-                        loading={setLoading}
                         authors={authors}
                         genres={genres}
+                        resetData={resetDataAdd}
+                        onDataChange={onDataChange}
+                        disable={disable}
+                        submitAddBook={submitAddBook}
+                        data={dataAdd}
                       />
                     </div>
                   </Grid>
@@ -280,7 +246,6 @@ const Books = () => {
                   limit={limit}
                   count={count}
                   bookSearch={handleBookSearch}
-                  setLoading={setLoading}
                   pageChange={handleChangePage}
                   rowsChange={handleChangeRowsPerPage}
                   resetData={resetData}

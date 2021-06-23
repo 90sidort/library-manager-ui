@@ -1,106 +1,29 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import {
   Typography,
   TextField,
   Grid,
   Button,
-  makeStyles,
   FormControlLabel,
   InputLabel,
   Checkbox,
 } from "@material-ui/core";
-import axios from "axios";
 
-import { AuthContext } from "../context/auth.context";
 import { FormControl } from "@material-ui/core";
 import { Select } from "@material-ui/core";
-
-const useStyles = makeStyles(() => ({
-  button: {
-    marginTop: "2%",
-    marginRight: "2%",
-    marginBottom: "1%",
-  },
-  buttonGroup: {
-    marginLeft: "auto",
-  },
-  select: {
-    width: "100%",
-  },
-}));
+import useStyles from "../styles/addbook.styles";
 
 const AddBook = (props) => {
-  const { genres, authors } = props;
-  const auth = useContext(AuthContext);
+  const {
+    genres,
+    authors,
+    resetData,
+    onDataChange,
+    disable,
+    submitAddBook,
+    data,
+  } = props;
   const classes = useStyles();
-  let initialData = {
-    title: "",
-    genre: [],
-    authors: [],
-    language: "polish",
-    pages: 0,
-    published: 2000,
-    publisher: "",
-    available: true,
-    description: "",
-  };
-  const [data, setData] = useState(initialData);
-  const [disable, setDisable] = useState(true);
-
-  const resetData = () => {
-    setData(initialData);
-    setDisable(true);
-  };
-
-  const onDataChange = (e) => {
-    let { value } = e.target;
-    const { id, options } = e.target;
-    if (id === "pages" || id === "published") value = parseInt(value);
-    else if (id === "available") value = value === "true" ? false : true;
-    if (id === "genre" || id === "authors") {
-      value = [];
-      for (let i = 0, l = options.length; i < l; i += 1) {
-        if (options[i].selected) {
-          value.push(options[i].value);
-        }
-      }
-    }
-    const newData = { ...data, [id]: value };
-    setData(newData);
-    for (const [key, value] of Object.entries(newData)) {
-      if (key !== "description") {
-        if (
-          value === "" ||
-          value === null ||
-          value === undefined ||
-          (Array.isArray(value) && value.length < 1)
-        ) {
-          setDisable(true);
-          break;
-        } else setDisable(false);
-      }
-    }
-  };
-
-  const submitAddBook = async (e) => {
-    e.preventDefault();
-    const { loading, setError } = props;
-    try {
-      await loading(true);
-      await axios({
-        method: "POST",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/books`,
-        headers: { authorization: `Bearer ${auth.token}` },
-        data,
-      });
-      await resetData();
-      await loading(false);
-    } catch (error) {
-      await setError(
-        error.response ? error.response.data.message : "Server error"
-      );
-    }
-  };
 
   return (
     <React.Fragment>

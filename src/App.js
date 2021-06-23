@@ -10,6 +10,7 @@ import ButtonAppBar from "./components/shared/Navigation";
 import User from "./components/User";
 import Book from "./components/Book";
 import SignUp from "./components/Sign/SignUp";
+import SignIn from "./components/Sign/SignIn";
 
 function App() {
   const { token, login, logout, userId, admin, userName } = useAuth();
@@ -37,6 +38,9 @@ function App() {
       <Switch>
         <Route path="/signup" exact={true}>
           <SignUp />
+        </Route>
+        <Route path="/signin" exact={true}>
+          <SignIn />
         </Route>
       </Switch>
     );
