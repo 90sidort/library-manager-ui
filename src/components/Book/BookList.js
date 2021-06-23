@@ -5,43 +5,17 @@ import {
   TablePagination,
   Typography,
   List,
-  makeStyles,
   Select,
   InputLabel,
   FormControlLabel,
   Checkbox,
   Button,
+  FormControl,
 } from "@material-ui/core";
 
-import SingleListItemBook from "./shared/SingleListItemBook";
-import { FormControl } from "@material-ui/core";
-import allowedLanguages from "../utils/languages";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    marginLeft: "20%",
-    marginRight: "20%",
-    marginBottom: "10%",
-  },
-  form: {
-    margin: theme.spacing(1),
-    width: "100%",
-    marginLeft: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  fields: {
-    margin: theme.spacing(1),
-    width: "35ch",
-  },
-  demo: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  title: {
-    margin: theme.spacing(4, 0, 2),
-  },
-}));
+import SingleListItemBook from "../shared/SingleListItemBook";
+import allowedLanguages from "../../utils/languages";
+import useStyles from "../../styles/booklist.styles";
 
 const BookList = (props) => {
   const classes = useStyles();

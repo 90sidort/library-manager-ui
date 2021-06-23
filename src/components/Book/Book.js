@@ -1,30 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useFormik } from "formik";
 import { useLocation } from "react-router";
-import axios from "axios";
+import { useHistory } from "react-router-dom";
 import {
   Card,
   CircularProgress,
   Grid,
-  makeStyles,
   CardContent,
   Typography,
   CardActions,
   Button,
 } from "@material-ui/core";
 
-import { AuthContext } from "../context/auth.context";
-import SimpleModal from "./shared/SimpleModal";
-import { useHistory } from "react-router-dom";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    minWidth: 275,
-    alignItems: "center",
-    justifyContent: "center",
-    display: "flex",
-    marginTop: "3%",
-  },
-}));
+import { AuthContext } from "../../context/auth.context";
+import SimpleModal from "../shared/SimpleModal";
+import useStyles from "../../styles/book.styles";
+import { useHttp } from "../../hooks/http.hook";
+import validationSchema from "../../validators/book.validator";
+import BookUpdate from "./BookUpdate";
 
 const Book = (props) => {
   const classes = useStyles();
@@ -32,51 +25,61 @@ const Book = (props) => {
   const location = useLocation();
   const auth = useContext(AuthContext);
   const [book, setBook] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [edit, showEdit] = useState(false);
+  const { loading, errorMessage, sendRequest, clearError } = useHttp();
 
-  const cancelError = () => {
-    setErrorMessage("");
-    setLoading(false);
-  };
+  const initialValues = { ...book };
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    validateOnBlur: true,
+    onSubmit: async (values, { setSubmitting }) => {
+      setSubmitting(true);
+      try {
+        const response = await sendRequest(
+          `${
+            process.env.REACT_APP_BACKEND_URL
+          }/api/books/${location.pathname.substring(7)}`,
+          "PUT",
+          null,
+          { authorization: `Bearer ${auth.token}` },
+          { ...values }
+        );
+        console.log(response);
+      } catch (error) {}
+    },
+  });
 
   const showForm = () => {
     showEdit(!edit);
   };
 
   const getBook = async () => {
-    setLoading(true);
     try {
-      const response = await axios({
-        method: "GET",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/books`,
-        headers: { authorization: `Bearer ${auth.token}` },
-        params: {
+      const response = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/books`,
+        "GET",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        {
           page: 1,
           limit: 1,
           bid: location.pathname.substring(7),
-        },
-      });
-      setBook(response.data.books[0]);
-      setLoading(false);
-    } catch (error) {
-      setErrorMessage(
-        error.response ? error.response.data.message : "Server error"
+        }
       );
-    }
+      setBook(response.data.books[0]);
+    } catch (error) {}
   };
 
   useEffect(() => {
     getBook();
   }, []);
 
-  console.log(book);
-
   return (
     <React.Fragment>
       {errorMessage && (
-        <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
+        <SimpleModal errorMessage={errorMessage} cancelError={clearError} />
       )}
       <Grid container spacing={2} className={classes.root}>
         <Grid item xs={12} sm={6}>

@@ -10,14 +10,14 @@ import {
 import { useHistory, useLocation } from "react-router-dom";
 import { ExpandMore } from "@material-ui/icons";
 
-import SimpleModal from "./shared/SimpleModal";
-import AddBook from "./AddBook";
-import BookList from "./BookList";
-import useStyles from "../styles/books.styles";
-import { AuthContext } from "../context/auth.context";
-import { useHttp } from "../hooks/http.hook";
-import { initialSearch, initialDataAdd } from "../utils/books.utils";
-import { readSearch } from "../utils/search.utils";
+import SimpleModal from "../shared/SimpleModal";
+import AddBook from "../Book/AddBook";
+import BookList from "../Book/BookList";
+import useStyles from "../../styles/books.styles";
+import { AuthContext } from "../../context/auth.context";
+import { useHttp } from "../../hooks/http.hook";
+import { initialSearch, initialDataAdd } from "../../utils/books.utils";
+import { readSearch } from "../../utils/search.utils";
 
 const Books = () => {
   const history = useHistory();
