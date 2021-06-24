@@ -6,13 +6,31 @@ import {
   Grid,
   TextField,
   Button,
+  MenuItem,
 } from "@material-ui/core";
 
 import useStyles from "../../styles/signup.styles";
+import allowedLanguages from "../../utils/languages";
 
 const BookUpdate = (props) => {
-  const { formik } = props;
+  const { formik, genres, authors } = props;
   const classes = useStyles();
+  const optionsLanguages = allowedLanguages.map((language, i) => (
+    <MenuItem key={i} value={language}>
+      {language}
+    </MenuItem>
+  ));
+  const optionsGenres = genres.map((genre, i) => (
+    <MenuItem key={i} value={genre._id}>
+      {genre.name}
+    </MenuItem>
+  ));
+  const optionsAuthors = authors.map((author, i) => (
+    <MenuItem key={i} value={author._id}>
+      {`${author.surname}, ${author.name}`}
+    </MenuItem>
+  ));
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -25,93 +43,160 @@ const BookUpdate = (props) => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="name"
-                name="name"
-                label="Name"
-                value={formik.values.name}
+                id="title"
+                name="title"
+                label="Title"
+                value={formik.values.title}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
+                error={formik.touched.title && Boolean(formik.errors.title)}
+                helperText={formik.touched.title && formik.errors.title}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="surname"
-                name="surname"
-                label="Surname"
-                value={formik.values.surname}
+                select
+                id="genre"
+                name="genre"
+                label="Genre"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.surname && Boolean(formik.errors.surname)}
-                helperText={formik.touched.surname && formik.errors.surname}
-              />
+                helperText={formik.touched.genre && formik.errors.genre}
+                error={formik.touched.genre && Boolean(formik.errors.genre)}
+                SelectProps={{
+                  multiple: true,
+                  value: formik.values.genre,
+                }}
+              >
+                {optionsGenres}
+              </TextField>
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="email"
-                name="email"
-                label="Email"
-                type="email"
-                onBlur={formik.handleBlur}
-                value={formik.values.email}
+                select
+                id="authors"
+                name="authors"
+                label="Authors"
                 onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-              />
+                onBlur={formik.handleBlur}
+                helperText={formik.touched.authors && formik.errors.authors}
+                error={formik.touched.authors && Boolean(formik.errors.authors)}
+                SelectProps={{
+                  multiple: true,
+                  value: formik.values.authors,
+                }}
+              >
+                {optionsAuthors}
+              </TextField>
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="password"
-                name="password"
-                label="Password"
-                type="password"
-                onBlur={formik.handleBlur}
-                value={formik.values.password}
+                select
+                id="language"
+                name="language"
+                label="Language"
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                helperText={formik.touched.language && formik.errors.language}
                 error={
-                  formik.touched.password && Boolean(formik.errors.password)
+                  formik.touched.language && Boolean(formik.errors.language)
                 }
-                helperText={formik.touched.password && formik.errors.password}
+                SelectProps={{
+                  value: formik.values.language,
+                }}
+              >
+                {optionsLanguages}
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                id="pages"
+                name="pages"
+                label="Pages"
+                value={formik.values.pages}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.pages && Boolean(formik.errors.pages)}
+                helperText={formik.touched.pages && formik.errors.pages}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="confirmPassword"
-                name="confirmPassword"
-                label="Repeat password"
-                type="password"
-                onBlur={formik.handleBlur}
-                value={formik.values.confirmPassword}
+                id="published"
+                name="published"
+                label="Published"
+                value={formik.values.published}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 error={
-                  formik.touched.confirmPassword &&
-                  Boolean(formik.errors.confirmPassword)
+                  formik.touched.published && Boolean(formik.errors.published)
                 }
-                helperText={
-                  formik.touched.confirmPassword &&
-                  formik.errors.confirmPassword
-                }
+                helperText={formik.touched.published && formik.errors.published}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                id="about"
-                name="about"
-                label="About"
-                variant="outlined"
+                fullWidth
+                id="publisher"
+                name="publisher"
+                label="Publisher"
+                value={formik.values.publisher}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.publisher && Boolean(formik.errors.publisher)
+                }
+                helperText={formik.touched.publisher && formik.errors.publisher}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                select
+                id="available"
+                name="available"
+                label="Available"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                helperText={formik.touched.available && formik.errors.available}
+                error={
+                  formik.touched.available && Boolean(formik.errors.available)
+                }
+                SelectProps={{
+                  value: formik.values.available,
+                }}
+              >
+                <MenuItem key="available" value={true}>
+                  Available
+                </MenuItem>
+                <MenuItem key="nonavailable" value={false}>
+                  Not available
+                </MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                id="description"
+                name="description"
+                label="Description"
                 multiline
                 rows={4}
-                fullWidth
-                onBlur={formik.handleBlur}
-                value={formik.values.about}
+                value={formik.values.description}
                 onChange={formik.handleChange}
-                error={formik.touched.about && Boolean(formik.errors.about)}
-                helperText={formik.touched.about && formik.errors.about}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.description &&
+                  Boolean(formik.errors.description)
+                }
+                helperText={
+                  formik.touched.description && formik.errors.description
+                }
               />
             </Grid>
           </Grid>

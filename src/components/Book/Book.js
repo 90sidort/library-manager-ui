@@ -25,34 +25,65 @@ const Book = (props) => {
   const location = useLocation();
   const auth = useContext(AuthContext);
   const [book, setBook] = useState(null);
+  const [initialValues, setInitialValues] = useState(null);
+  const [genres, setGenres] = useState(null);
+  const [authors, setAuthors] = useState(null);
   const [edit, showEdit] = useState(false);
   const { loading, errorMessage, sendRequest, clearError } = useHttp();
 
-  const initialValues = { ...book };
+  const initiateValues = (book) => ({
+    ...book,
+    genre: book ? book.genre.map((singleGenre) => singleGenre._id) : [],
+    authors: book ? book.authors.map((author) => author._id) : [],
+  });
 
   const formik = useFormik({
     initialValues,
     validationSchema,
+    enableReinitialize: true,
     validateOnBlur: true,
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true);
       try {
-        const response = await sendRequest(
+        await sendRequest(
           `${
             process.env.REACT_APP_BACKEND_URL
           }/api/books/${location.pathname.substring(7)}`,
           "PUT",
-          null,
+          { ...values },
           { authorization: `Bearer ${auth.token}` },
-          { ...values }
+          null
         );
-        console.log(response);
+        showEdit(!edit);
       } catch (error) {}
     },
   });
 
-  const showForm = () => {
-    showEdit(!edit);
+  console.log(formik);
+
+  const loadAuthors = async () => {
+    try {
+      const response = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/authors`,
+        "GET",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        { page: 1, limit: 9999 }
+      );
+      setAuthors(response.data.author);
+    } catch (error) {}
+  };
+  const loadGenres = async () => {
+    try {
+      const response = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/genres`,
+        "GET",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        { page: 1, limit: 9999 }
+      );
+      setGenres(response.data.genres);
+    } catch (error) {}
   };
 
   const getBook = async () => {
@@ -68,15 +99,22 @@ const Book = (props) => {
           bid: location.pathname.substring(7),
         }
       );
-      setBook(response.data.books[0]);
+      const book = response.data.books[0];
+      setBook(book);
+      const data = initiateValues(book);
+      setInitialValues(data);
     } catch (error) {}
+  };
+
+  const showForm = async () => {
+    if (!genres) await loadGenres();
+    if (!authors) await loadAuthors();
+    showEdit(!edit);
   };
 
   useEffect(() => {
     getBook();
-  }, []);
-
-  console.log(initialValues);
+  }, [formik.isSubmitting]);
 
   return (
     <React.Fragment>
@@ -178,11 +216,11 @@ const Book = (props) => {
           </Card>
         </Grid>
       </Grid>
-      {edit && (
+      {edit && genres && (
         <Grid container spacing={2} className={classes.root}>
           <Grid item xs={12} sm={6}>
             <div className={classes.form}>
-              <BookUpdate formik={formik} />
+              <BookUpdate formik={formik} genres={genres} authors={authors} />
             </div>
           </Grid>
         </Grid>

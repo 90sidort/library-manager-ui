@@ -30,7 +30,6 @@ export const useHttp = () => {
         setLoading(false);
         return response;
       } catch (error) {
-        console.log(error);
         setErrorMessage(
           error.response ? error.response.data.message : "Server error"
         );
