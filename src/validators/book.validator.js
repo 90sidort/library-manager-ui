@@ -32,11 +32,8 @@ const validationSchemaBookEdit = Yup.object({
     .required("Publisher required!")
     .min(2, "Cannot be shorter than 2 characters!")
     .max(800, "Cannot be longer than 800 characters!"),
-  available: Yup.boolean()
-  .required("Availability details are required"),
-  description: Yup.string()
-    .required("Description required!")
-    .max(1500, "Cannot be longer than 1500 characters!"),
+  available: Yup.boolean().required("Availability details are required"),
+  description: Yup.string().max(1500, "Cannot be longer than 1500 characters!"),
 });
 
 export default validationSchemaBookEdit;

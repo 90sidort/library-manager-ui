@@ -31,6 +31,7 @@ const BookList = (props) => {
     authors,
     genres,
     resetData,
+    deleteBook,
   } = props;
 
   const allOptions = <option value="all">{`All`}</option>;
@@ -165,7 +166,7 @@ const BookList = (props) => {
           className={classes.fields}
           control={
             <Checkbox
-              checked={search.available}
+              checked={search.available === true ? true : false}
               onChange={bookSearch}
               name="available"
               id="available"
@@ -190,10 +191,12 @@ const BookList = (props) => {
               books.map((book) => (
                 <SingleListItemBook
                   key={book._id}
+                  id={book._id}
                   title={book.title}
                   published={book.published}
                   authors={book.authors}
                   link={`books/${book._id}`}
+                  deleteBook={deleteBook}
                 />
               ))
             ) : (

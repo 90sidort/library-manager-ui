@@ -18,6 +18,8 @@ import { AuthContext } from "../../context/auth.context";
 import { useHttp } from "../../hooks/http.hook";
 import { initialSearch, initialDataAdd } from "../../utils/books.utils";
 import { readSearch } from "../../utils/search.utils";
+import { useFormik } from "formik";
+import validationSchema from "../../validators/book.validator";
 
 const Books = () => {
   const history = useHistory();
@@ -32,11 +34,30 @@ const Books = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
   const [count, setCount] = useState(0);
-  const [dataAdd, setDataAdd] = useState(initialDataAdd);
-  const [disable, setDisable] = useState(true);
   const { loading, errorMessage, sendRequest, clearError } = useHttp();
 
+  const formik = useFormik({
+    initialValues: initialDataAdd,
+    validationSchema,
+    validateOnBlur: true,
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      setSubmitting(true);
+      try {
+        await sendRequest(
+          `${process.env.REACT_APP_BACKEND_URL}/api/books`,
+          "POST",
+          { ...values },
+          { authorization: `Bearer ${auth.token}` },
+          null
+        );
+        resetForm();
+        resetData();
+      } catch (error) {}
+    },
+  });
+
   const loadBooks = async () => {
+    let newRoute;
     try {
       const response = await sendRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/books`,
@@ -47,12 +68,18 @@ const Books = () => {
       );
       setCount(response.data.count);
       setBooks(response.data.books);
-      const newRoute = response.request.responseURL.split("?")[1];
+      newRoute = response.request.responseURL.split("?")[1];
       history.push({
         pathname: "/",
         search: `${newRoute}`,
       });
-    } catch (error) {}
+    } catch (error) {
+      newRoute = error.request.responseURL.split("?")[1];
+      history.push({
+        pathname: "/",
+        search: `${newRoute}`,
+      });
+    }
   };
   const loadAuthors = async () => {
     try {
@@ -78,55 +105,7 @@ const Books = () => {
       setGenres(response.data.genres);
     } catch (error) {}
   };
-  const submitAddBook = async (e) => {
-    e.preventDefault();
-    try {
-      await sendRequest(
-        `${process.env.REACT_APP_BACKEND_URL}/api/books`,
-        "POST",
-        dataAdd,
-        { authorization: `Bearer ${auth.token}` },
-        null
-      );
-      resetDataAdd();
-      resetData();
-    } catch (error) {}
-  };
 
-  const resetDataAdd = () => {
-    setDataAdd(initialDataAdd);
-    setDisable(true);
-  };
-
-  const onDataChange = (e) => {
-    let { value } = e.target;
-    const { id, options } = e.target;
-    if (id === "pages" || id === "published") value = parseInt(value);
-    else if (id === "available") value = value === "true" ? false : true;
-    if (id === "genre" || id === "authors") {
-      value = [];
-      for (let i = 0, l = options.length; i < l; i += 1) {
-        if (options[i].selected) {
-          value.push(options[i].value);
-        }
-      }
-    }
-    const newDataAdd = { ...dataAdd, [id]: value };
-    setDataAdd(newDataAdd);
-    for (const [key, value] of Object.entries(newDataAdd)) {
-      if (key !== "description") {
-        if (
-          value === "" ||
-          value === null ||
-          value === undefined ||
-          (Array.isArray(value) && value.length < 1)
-        ) {
-          setDisable(true);
-          break;
-        } else setDisable(false);
-      }
-    }
-  };
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -149,19 +128,28 @@ const Books = () => {
     setLimit(parseInt(e.target.value));
     setPage(1);
   };
+  const handleBookDelete = async (id) => {
+    try {
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/books/${id}`,
+        "DELETE",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        null
+      );
+      setPage(1);
+      loadBooks();
+    } catch (error) {}
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       loadBooks();
+      if (!authors) loadAuthors();
+      if (!genres) loadGenres();
     }, 1000);
     return () => clearTimeout(timer);
   }, [auth.token, limit, page, search]);
-
-  useEffect(() => {
-    loadAuthors();
-    loadGenres();
-    loadBooks();
-  }, [auth.token]);
 
   return (
     <div className={classes.root}>
@@ -207,11 +195,7 @@ const Books = () => {
                       <AddBook
                         authors={authors}
                         genres={genres}
-                        resetData={resetDataAdd}
-                        onDataChange={onDataChange}
-                        disable={disable}
-                        submitAddBook={submitAddBook}
-                        data={dataAdd}
+                        formik={formik}
                       />
                     </div>
                   </Grid>
@@ -249,6 +233,7 @@ const Books = () => {
                   pageChange={handleChangePage}
                   rowsChange={handleChangeRowsPerPage}
                   resetData={resetData}
+                  deleteBook={handleBookDelete}
                 />
               )}
             </AccordionDetails>

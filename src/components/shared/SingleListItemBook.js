@@ -10,7 +10,7 @@ import { MenuBook, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
 const SingleListItemBook = (props) => {
-  const { link, title, published, authors, fromUser } = props;
+  const { id, link, title, published, authors, fromUser, deleteBook } = props;
   const authorsString = (authors) => {
     let authorsReady = ``;
     authors.forEach((author) => {
@@ -38,7 +38,11 @@ const SingleListItemBook = (props) => {
       </Link>
       {!fromUser && (
         <ListItemSecondaryAction>
-          <IconButton edge="end" aria-label="delete">
+          <IconButton
+            edge="end"
+            aria-label="delete"
+            onClick={() => deleteBook(id)}
+          >
             <Delete />
           </IconButton>
         </ListItemSecondaryAction>

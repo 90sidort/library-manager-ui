@@ -76,7 +76,11 @@ const Users = () => {
     setLimit(parseInt(e.target.value));
     setPage(1);
   };
-  const cancelError = () => setErrorMessage("");
+  const cancelError = () => {
+    setLoading(false);
+    setUsers([]);
+    setErrorMessage("");
+  };
   const handleSearchChange = (e) => {
     const { id, value } = e.target;
     setPage(1);

@@ -59,8 +59,6 @@ const Book = (props) => {
     },
   });
 
-  console.log(formik);
-
   const loadAuthors = async () => {
     try {
       const response = await sendRequest(
