@@ -6,12 +6,12 @@ import {
   Grid,
   TextField,
   Button,
-  Link,
 } from "@material-ui/core";
 
 import useStyles from "../../styles/signup.styles";
 
 const BookUpdate = (props) => {
+  const { formik } = props;
   const classes = useStyles();
   return (
     <Container component="main" maxWidth="xs">
@@ -123,15 +123,8 @@ const BookUpdate = (props) => {
             color="primary"
             className={classes.submit}
           >
-            Sign Up
+            Save changes
           </Button>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <RouterLink to="/signin" style={{ textDecoration: "none" }}>
-                <Link variant="body2">Already have an account? Sign in</Link>
-              </RouterLink>
-            </Grid>
-          </Grid>
         </form>
       </div>
     </Container>

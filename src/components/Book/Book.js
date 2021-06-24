@@ -76,6 +76,8 @@ const Book = (props) => {
     getBook();
   }, []);
 
+  console.log(initialValues);
+
   return (
     <React.Fragment>
       {errorMessage && (
@@ -176,6 +178,15 @@ const Book = (props) => {
           </Card>
         </Grid>
       </Grid>
+      {edit && (
+        <Grid container spacing={2} className={classes.root}>
+          <Grid item xs={12} sm={6}>
+            <div className={classes.form}>
+              <BookUpdate formik={formik} />
+            </div>
+          </Grid>
+        </Grid>
+      )}
     </React.Fragment>
   );
 };
