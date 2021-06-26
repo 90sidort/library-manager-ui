@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 
-import axios from "axios";
-import { makeStyles } from "@material-ui/core/styles";
 import {
   Card,
   CardActions,
@@ -18,43 +16,12 @@ import UserEdit from "./UserEdit";
 import SimpleModal from "./shared/SimpleModal";
 import SingleListItemBook from "./shared/SingleListItemBook";
 import { useHistory } from "react-router-dom";
+import useStyles from "../styles/user.styles";
+import { useHttp } from "../hooks/http.hook";
+import { useFormik } from "formik";
+import validationSchema from "../validators/editUser.validator";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    minWidth: 275,
-    alignItems: "center",
-    justifyContent: "center",
-    display: "flex",
-    marginTop: "3%",
-  },
-  borrowings: {
-    width: "100%",
-    marginTop: "1%",
-    backgroundColor: theme.palette.background.paper,
-  },
-  form: {
-    width: "100%",
-    marginTop: "1%",
-    marginLeft: "1%",
-  },
-  bullet: {
-    display: "inline-block",
-    margin: "0 2px",
-    transform: "scale(0.8)",
-  },
-  title: {
-    fontSize: 14,
-  },
-  lines: {
-    paddingBottom: 7,
-    paddingTop: 7,
-  },
-  pos: {
-    marginBottom: 12,
-  },
-}));
-
-const User = (props) => {
+const User = () => {
   const history = useHistory();
   const classes = useStyles();
   const location = useLocation();
@@ -62,9 +29,36 @@ const User = (props) => {
   const [user, setUser] = useState(null);
   const [borrows, showBorrows] = useState(false);
   const [edit, showEdit] = useState(false);
-  const [formData, setFormData] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { loading, errorMessage, sendRequest, clearError } = useHttp();
+
+  const initialDataEditUser = {
+    name: user.name,
+    surname: user.surname,
+    email: user.email,
+    about: user.about,
+  };
+
+  const formik = useFormik({
+    initialValues: initialDataEditUser,
+    validationSchema,
+    enableReinitialize: true,
+    validateOnBlur: true,
+    onSubmit: async (values, { setSubmitting }) => {
+      setSubmitting(true);
+      try {
+        await sendRequest(
+          `${
+            process.env.REACT_APP_BACKEND_URL
+          }/api/users/${location.pathname.substring(7)}`,
+          "PUT",
+          { ...values, bid: location.pathname.substring(7) },
+          { authorization: `Bearer ${auth.token}` },
+          { uid: location.pathname.substring(7) }
+        );
+        setSubmitting(false);
+      } catch (error) {}
+    },
+  });
 
   const showList = () => {
     showEdit(false);
@@ -74,51 +68,19 @@ const User = (props) => {
     showBorrows(false);
     showEdit(!edit);
   };
-  const cancelError = () => {
-    setErrorMessage("");
-    setLoading(false);
-  };
-
-  const updateUser = (user) => {
-    const { name, surname, email, about, _id } = user;
-    setUser(user);
-    setFormData({
-      name,
-      surname,
-      email,
-      about,
-      id: _id,
-    });
-  };
 
   const getUser = async () => {
-    setLoading(true);
     try {
-      const response = await axios({
-        method: "GET",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
-        headers: { authorization: `Bearer ${auth.token}` },
-        params: {
-          page: 1,
-          limit: 1,
-          uid: location.pathname.substring(7),
-        },
-      });
+      const response = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users`,
+        "GET",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        { page: 1, limit: 1, uid: location.pathname.substring(7) }
+      );
       const userData = response.data.users[0];
       setUser(userData);
-      setFormData({
-        name: userData.name,
-        surname: userData.surname,
-        email: userData.email,
-        about: userData.about,
-        id: userData._id,
-      });
-      setLoading(false);
-    } catch (error) {
-      setErrorMessage(
-        error.response ? error.response.data.message : "Server error"
-      );
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -128,7 +90,7 @@ const User = (props) => {
   return (
     <React.Fragment>
       {errorMessage && (
-        <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
+        <SimpleModal errorMessage={errorMessage} cancelError={clearError} />
       )}
       <Grid container spacing={2} className={classes.root}>
         <Grid item xs={12} sm={6}>
@@ -234,12 +196,7 @@ const User = (props) => {
         <Grid container spacing={2} className={classes.root}>
           <Grid item xs={12} sm={6}>
             <div className={classes.form}>
-              <UserEdit
-                data={formData}
-                hide={showForm}
-                updateUserComponent={updateUser}
-                loading={setLoading}
-              />
+              <UserEdit formik={formik} />
             </div>
           </Grid>
         </Grid>
