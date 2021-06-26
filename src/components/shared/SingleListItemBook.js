@@ -6,11 +6,11 @@ import {
   ListItemSecondaryAction,
   IconButton,
 } from "@material-ui/core";
-import { MenuBook, Delete } from "@material-ui/icons";
+import { MenuBook, Delete, KeyboardReturn } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
 const SingleListItemBook = (props) => {
-  const { id, link, title, published, authors, fromUser, deleteBook } = props;
+  const { id, link, title, published, authors, deleteBook, returnBook } = props;
   const authorsString = (authors) => {
     let authorsReady = ``;
     authors.forEach((author) => {
@@ -33,11 +33,11 @@ const SingleListItemBook = (props) => {
         style={{ textDecoration: "none", color: "black" }}
       >
         <ListItemText primary={`${title}`} />
-        {!fromUser && <ListItemText secondary={`${authorsString(authors)}`} />}
-        {!fromUser && <ListItemText secondary={`${published}`} />}
+        {deleteBook && <ListItemText secondary={`${authorsString(authors)}`} />}
+        {deleteBook && <ListItemText secondary={`${published}`} />}
       </Link>
-      {!fromUser && (
-        <ListItemSecondaryAction>
+      <ListItemSecondaryAction>
+        {deleteBook && (
           <IconButton
             edge="end"
             aria-label="delete"
@@ -45,8 +45,17 @@ const SingleListItemBook = (props) => {
           >
             <Delete />
           </IconButton>
-        </ListItemSecondaryAction>
-      )}
+        )}
+        {returnBook && (
+          <IconButton
+            edge="end"
+            aria-label="returnBook"
+            onClick={() => returnBook(id)}
+          >
+            <KeyboardReturn />
+          </IconButton>
+        )}
+      </ListItemSecondaryAction>
     </ListItem>
   );
 };

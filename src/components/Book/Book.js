@@ -59,6 +59,7 @@ const Book = (props) => {
           null
         );
         setSubmitting(false);
+        showBorrow(false);
       } catch (error) {}
     },
   });
@@ -153,7 +154,7 @@ const Book = (props) => {
 
   useEffect(() => {
     getBook();
-  }, [formikEdit.isSubmitting]);
+  }, [formikEdit.isSubmitting, formikBorrow.isSubmitting]);
 
   return (
     <React.Fragment>

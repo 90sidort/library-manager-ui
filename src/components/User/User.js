@@ -32,10 +32,10 @@ const User = () => {
   const { loading, errorMessage, sendRequest, clearError } = useHttp();
 
   const initialDataEditUser = {
-    name: user.name,
-    surname: user.surname,
-    email: user.email,
-    about: user.about,
+    name: user ? user.name : "",
+    surname: user ? user.surname : "",
+    email: user ? user.email : "",
+    about: user ? user.about : "",
   };
 
   const formik = useFormik({
@@ -80,6 +80,19 @@ const User = () => {
       );
       const userData = response.data.users[0];
       setUser(userData);
+    } catch (error) {}
+  };
+
+  const returnBook = async (bid) => {
+    try {
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/borrows/return`,
+        "PATCH",
+        { bid, uid: location.pathname.substring(7) },
+        { authorization: `Bearer ${auth.token}` },
+        null
+      );
+      getUser();
     } catch (error) {}
   };
 
@@ -173,16 +186,17 @@ const User = () => {
       {user && borrows && (
         <Grid container spacing={2} className={classes.root}>
           <Grid item xs={12} sm={6}>
-            <div className={classes.borrowings}>
+            <div className={classes.borrowings} style={{ listStyle: "none" }}>
               {user.borrowed.length > 0 ? (
                 user.borrowed.map((borrowing) => (
                   <SingleListItemBook
                     key={borrowing.book._id}
+                    id={borrowing.book._id}
                     title={borrowing.book.title}
                     published={borrowing.book.published}
                     authors={borrowing.book.authors}
                     link={`/books/${borrowing.book._id}`}
-                    fromUser={true}
+                    returnBook={returnBook}
                   />
                 ))
               ) : (
