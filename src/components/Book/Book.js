@@ -16,8 +16,11 @@ import { AuthContext } from "../../context/auth.context";
 import SimpleModal from "../shared/SimpleModal";
 import useStyles from "../../styles/book.styles";
 import { useHttp } from "../../hooks/http.hook";
-import validationSchema from "../../validators/book.validator";
+import validationSchemaEdit from "../../validators/book.validator";
+import validationSchemaBookBorrow from "../../validators/borrow.validator";
 import BookUpdate from "./BookUpdate";
+import BookBorrow from "./BookBorrow";
+import SingleListItemUser from "../shared/SingleListItemUser";
 
 const Book = (props) => {
   const classes = useStyles();
@@ -29,17 +32,40 @@ const Book = (props) => {
   const [genres, setGenres] = useState(null);
   const [authors, setAuthors] = useState(null);
   const [edit, showEdit] = useState(false);
+  const [borrow, showBorrow] = useState(false);
+  const [borrower, showBorrower] = useState(false);
   const { loading, errorMessage, sendRequest, clearError } = useHttp();
 
-  const initiateValues = (book) => ({
+  const initiateValuesEdit = (book) => ({
     ...book,
     genre: book ? book.genre.map((singleGenre) => singleGenre._id) : [],
     authors: book ? book.authors.map((author) => author._id) : [],
   });
 
-  const formik = useFormik({
+  const formikBorrow = useFormik({
+    initialValues: {
+      email: "",
+    },
+    validationSchema: validationSchemaBookBorrow,
+    validateOnBlur: true,
+    onSubmit: async (values, { setSubmitting }) => {
+      setSubmitting(true);
+      try {
+        await sendRequest(
+          `${process.env.REACT_APP_BACKEND_URL}/api/borrows/borrow`,
+          "PATCH",
+          { ...values, bid: location.pathname.substring(7) },
+          { authorization: `Bearer ${auth.token}` },
+          null
+        );
+        setSubmitting(false);
+      } catch (error) {}
+    },
+  });
+
+  const formikEdit = useFormik({
     initialValues,
-    validationSchema,
+    validationSchema: validationSchemaEdit,
     enableReinitialize: true,
     validateOnBlur: true,
     onSubmit: async (values, { setSubmitting }) => {
@@ -54,6 +80,7 @@ const Book = (props) => {
           { authorization: `Bearer ${auth.token}` },
           null
         );
+        setSubmitting(false);
         showEdit(!edit);
       } catch (error) {}
     },
@@ -99,20 +126,34 @@ const Book = (props) => {
       );
       const book = response.data.books[0];
       setBook(book);
-      const data = initiateValues(book);
+      const data = initiateValuesEdit(book);
       setInitialValues(data);
     } catch (error) {}
   };
 
-  const showForm = async () => {
+  const showEditForm = async () => {
     if (!genres) await loadGenres();
     if (!authors) await loadAuthors();
     showEdit(!edit);
+    showBorrow(false);
+    showBorrower(false);
+  };
+
+  const showBorrowForm = () => {
+    showBorrow(!borrow);
+    showEdit(false);
+    showBorrower(false);
+  };
+
+  const showBorrowerData = () => {
+    showBorrower(!borrower);
+    showBorrow(false);
+    showEdit(false);
   };
 
   useEffect(() => {
     getBook();
-  }, [formik.isSubmitting]);
+  }, [formikEdit.isSubmitting]);
 
   return (
     <React.Fragment>
@@ -200,8 +241,18 @@ const Book = (props) => {
                 {book && (
                   <CardActions>
                     {auth.admin && (
-                      <Button size="small" onClick={showForm}>
+                      <Button size="small" onClick={showEditForm}>
                         Edit book data
+                      </Button>
+                    )}
+                    {auth.admin && book.available && (
+                      <Button size="small" onClick={showBorrowForm}>
+                        Borrow book
+                      </Button>
+                    )}
+                    {auth.admin && !book.available && (
+                      <Button size="small" onClick={showBorrowerData}>
+                        Show borrower
                       </Button>
                     )}
                     <Button size="small" onClick={() => history.goBack()}>
@@ -214,12 +265,36 @@ const Book = (props) => {
           </Card>
         </Grid>
       </Grid>
-      {edit && genres && (
+      {edit && genres && authors && (
         <Grid container spacing={2} className={classes.root}>
           <Grid item xs={12} sm={6}>
             <div className={classes.form}>
-              <BookUpdate formik={formik} genres={genres} authors={authors} />
+              <BookUpdate
+                formik={formikEdit}
+                genres={genres}
+                authors={authors}
+              />
             </div>
+          </Grid>
+        </Grid>
+      )}
+      {borrow && (
+        <Grid container spacing={2} className={classes.root}>
+          <Grid item xs={12} sm={6}>
+            <div className={classes.form}>
+              <BookBorrow formik={formikBorrow} />
+            </div>
+          </Grid>
+        </Grid>
+      )}
+      {borrower && (
+        <Grid container spacing={2} className={classes.root}>
+          <Grid item xs={12} sm={6} style={{ listStyle: "none" }}>
+            <SingleListItemUser
+              name={book.borrower.name}
+              surname={book.borrower.surname}
+              link={`/users/${book.borrower._id}`}
+            />
           </Grid>
         </Grid>
       )}

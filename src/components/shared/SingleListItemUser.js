@@ -27,13 +27,15 @@ const SingleListItemUser = (props) => {
         <ListItemText primary={`${surname}, ${name}`} />{" "}
       </Link>
       <ListItemSecondaryAction>
-        <IconButton
-          edge="end"
-          aria-label="delete"
-          onClick={() => deleteUser(id)}
-        >
-          <Delete />
-        </IconButton>
+        {deleteUser && (
+          <IconButton
+            edge="end"
+            aria-label="delete"
+            onClick={() => deleteUser(id)}
+          >
+            <Delete />
+          </IconButton>
+        )}
       </ListItemSecondaryAction>
     </ListItem>
   );

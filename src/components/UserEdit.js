@@ -138,7 +138,6 @@ const UserEdit = (props) => {
           <Grid item xs={12}>
             <TextField
               onChange={onDataChange}
-              required
               id="about"
               name="about"
               label="About"

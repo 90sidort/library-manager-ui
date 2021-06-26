@@ -210,6 +210,15 @@ const BookUpdate = (props) => {
           >
             Save changes
           </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            color="secondary"
+            className={classes.submit}
+            onClick={formik.handleReset}
+          >
+            Reset form
+          </Button>
         </form>
       </div>
     </Container>

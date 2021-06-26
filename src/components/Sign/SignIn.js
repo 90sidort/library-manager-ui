@@ -47,6 +47,7 @@ const SignIn = () => {
           response.data.userName,
           response.data.admin
         );
+        setSubmitting(false);
         history.push("/");
       } catch (error) {
         setErrorMessage(
