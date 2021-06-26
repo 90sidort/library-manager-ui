@@ -11,15 +11,15 @@ import {
 } from "@material-ui/core";
 import { useLocation } from "react-router";
 
-import { AuthContext } from "../context/auth.context";
+import { AuthContext } from "../../context/auth.context";
 import UserEdit from "./UserEdit";
-import SimpleModal from "./shared/SimpleModal";
-import SingleListItemBook from "./shared/SingleListItemBook";
+import SimpleModal from "../shared/SimpleModal";
+import SingleListItemBook from "../shared/SingleListItemBook";
 import { useHistory } from "react-router-dom";
-import useStyles from "../styles/user.styles";
-import { useHttp } from "../hooks/http.hook";
+import useStyles from "../../styles/user.styles";
+import { useHttp } from "../../hooks/http.hook";
 import { useFormik } from "formik";
-import validationSchema from "../validators/editUser.validator";
+import validationSchema from "../../validators/editUser.validator";
 
 const User = () => {
   const history = useHistory();

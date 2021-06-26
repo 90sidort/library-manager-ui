@@ -8,7 +8,7 @@ import {
   CssBaseline,
 } from "@material-ui/core";
 
-import useStyles from "../styles/useredit.styles";
+import useStyles from "../../styles/useredit.styles";
 
 const UserEdit = (props) => {
   const { formik } = props;

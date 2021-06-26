@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import axios from "axios";
 import {
   Grid,
   List,
-  makeStyles,
   Typography,
   TablePagination,
   TextField,
@@ -11,36 +9,11 @@ import {
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 
-import { AuthContext } from "../context/auth.context";
-import SingleListItemUser from "./shared/SingleListItemUser";
-import SimpleModal from "./shared/SimpleModal";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    marginLeft: "20%",
-    marginRight: "20%",
-    marginBottom: "10%",
-  },
-  form: {
-    margin: theme.spacing(1),
-    width: "100%",
-    marginLeft: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    display: "flex",
-  },
-  fields: {
-    margin: "auto",
-    width: "50%",
-  },
-  demo: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  title: {
-    margin: theme.spacing(4, 0, 2),
-  },
-}));
+import { AuthContext } from "../../context/auth.context";
+import SingleListItemUser from "../shared/SingleListItemUser";
+import SimpleModal from "../shared/SimpleModal";
+import useStyles from "../../styles/users.styles";
+import { useHttp } from "../../hooks/http.hook";
 
 const Users = () => {
   const history = useHistory();
@@ -68,18 +41,12 @@ const Users = () => {
   const [count, setCount] = useState(0);
   const [limit, setLimit] = useState(25);
   const [search, setSearch] = useState(readSearch());
-  const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { loading, errorMessage, sendRequest, clearError } = useHttp();
 
   const handleChangePage = (e, newPage) => setPage(newPage + 1);
   const handleChangeRowsPerPage = (e) => {
     setLimit(parseInt(e.target.value));
     setPage(1);
-  };
-  const cancelError = () => {
-    setLoading(false);
-    setUsers([]);
-    setErrorMessage("");
   };
   const handleSearchChange = (e) => {
     const { id, value } = e.target;
@@ -93,43 +60,33 @@ const Users = () => {
   };
 
   const handleUserDelete = async (id) => {
-    setLoading(true);
     try {
-      await axios({
-        method: "DELETE",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/users/${id}`,
-        headers: { authorization: `Bearer ${auth.token}` },
-      });
-      await getUsers();
-      setLoading(false);
-    } catch (error) {
-      setErrorMessage(
-        error.response ? error.response.data.message : "Server error"
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/${id}`,
+        "DELETE",
+        null,
+        { authorization: `Bearer ${auth.token}` }
       );
-    }
+      await getUsers();
+    } catch (error) {}
   };
 
   const getUsers = async () => {
+    const parameters = readSearch(location);
     try {
-      const parameters = readSearch(location);
-      const { data } = await axios({
-        method: "GET",
-        url: `${process.env.REACT_APP_BACKEND_URL}/api/users`,
-        headers: { authorization: `Bearer ${auth.token}` },
-        params: { page, limit, ...parameters },
-      });
+      const { data } = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users`,
+        "GET",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        { page, limit, ...parameters }
+      );
       setUsers(data.users);
       setCount(data.count);
-      setLoading(false);
-    } catch (error) {
-      setErrorMessage(
-        error.response ? error.response.data.message : "Server error"
-      );
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
-    setLoading(true);
     const timer = setTimeout(() => {
       getUsers();
     }, 1000);
@@ -139,7 +96,7 @@ const Users = () => {
   return (
     <React.Fragment>
       {errorMessage && (
-        <SimpleModal errorMessage={errorMessage} cancelError={cancelError} />
+        <SimpleModal errorMessage={errorMessage} cancelError={clearError} />
       )}
       <div className={classes.root}>
         <Grid item xs={12} md={12}>
