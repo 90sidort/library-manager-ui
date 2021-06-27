@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import { AuthContext } from "./context/auth.context";
 import { useAuth } from "./hooks/auth.hook";
+import Authors from "./components/Author/Authors";
 import Books from "./components/Book/Books";
 import Users from "./components/User/Users";
 import ButtonAppBar from "./components/shared/Navigation";
@@ -23,6 +24,9 @@ function App() {
         </Route>
         <Route path="/users" exact={true}>
           <Users />
+        </Route>
+        <Route path="/authors" exact={true}>
+          <Authors />
         </Route>
         <Route path="/users/:uid" exact={true}>
           <User />
