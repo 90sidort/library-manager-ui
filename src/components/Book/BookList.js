@@ -200,7 +200,7 @@ const BookList = (props) => {
                 />
               ))
             ) : (
-              <p>No users match search criteria</p>
+              <p key={1}>No users match search criteria</p>
             )}
           </List>
         )}

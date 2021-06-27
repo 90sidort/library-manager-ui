@@ -100,6 +100,8 @@ const User = () => {
     getUser();
   }, []);
 
+  console.log(user);
+
   return (
     <React.Fragment>
       {errorMessage && (
@@ -197,6 +199,12 @@ const User = () => {
                     authors={borrowing.book.authors}
                     link={`/books/${borrowing.book._id}`}
                     returnBook={returnBook}
+                    overdue={
+                      Date.parse(new Date()) > Date.parse(borrowing.end)
+                        ? true
+                        : false
+                    }
+                    endDate={borrowing.end}
                   />
                 ))
               ) : (

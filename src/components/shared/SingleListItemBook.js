@@ -5,12 +5,24 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
+  Tooltip,
 } from "@material-ui/core";
 import { MenuBook, Delete, KeyboardReturn } from "@material-ui/icons";
 import { Link } from "react-router-dom";
+import calculateFine from "../../utils/fine.utils";
 
 const SingleListItemBook = (props) => {
-  const { id, link, title, published, authors, deleteBook, returnBook } = props;
+  const {
+    id,
+    link,
+    title,
+    published,
+    authors,
+    deleteBook,
+    returnBook,
+    overdue,
+    endDate,
+  } = props;
   const authorsString = (authors) => {
     let authorsReady = ``;
     authors.forEach((author) => {
@@ -19,6 +31,10 @@ const SingleListItemBook = (props) => {
     authorsReady.trim();
     return authorsReady;
   };
+
+  let fine;
+  if (overdue) fine = calculateFine(endDate);
+
   return (
     <ListItem>
       <ListItemAvatar>
@@ -33,27 +49,38 @@ const SingleListItemBook = (props) => {
         style={{ textDecoration: "none", color: "black" }}
       >
         <ListItemText primary={`${title}`} />
+        {overdue && (
+          <ListItemText
+            primary={`OVERDUE!!!`}
+            secondary={`Fine to be paid: ${fine}zł.`}
+            style={{ color: "red" }}
+          />
+        )}
         {deleteBook && <ListItemText secondary={`${authorsString(authors)}`} />}
         {deleteBook && <ListItemText secondary={`${published}`} />}
       </Link>
       <ListItemSecondaryAction>
         {deleteBook && (
-          <IconButton
-            edge="end"
-            aria-label="delete"
-            onClick={() => deleteBook(id)}
-          >
-            <Delete />
-          </IconButton>
+          <Tooltip title="Delete" aria-label="delete">
+            <IconButton
+              edge="end"
+              aria-label="delete"
+              onClick={() => deleteBook(id)}
+            >
+              <Delete />
+            </IconButton>
+          </Tooltip>
         )}
         {returnBook && (
-          <IconButton
-            edge="end"
-            aria-label="returnBook"
-            onClick={() => returnBook(id)}
-          >
-            <KeyboardReturn />
-          </IconButton>
+          <Tooltip title="Return" aria-label="return">
+            <IconButton
+              edge="end"
+              aria-label="return"
+              onClick={() => returnBook(id)}
+            >
+              <KeyboardReturn />
+            </IconButton>
+          </Tooltip>
         )}
       </ListItemSecondaryAction>
     </ListItem>
