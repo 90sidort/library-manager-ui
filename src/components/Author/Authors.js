@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useFormik } from "formik";
 import {
   Accordion,
   AccordionDetails,
@@ -16,8 +17,9 @@ import AddAuthor from "../Author/AddAuthor";
 import useStyles from "../../styles/books.styles";
 import { AuthContext } from "../../context/auth.context";
 import { useHttp } from "../../hooks/http.hook";
-import { useFormik } from "formik";
+import { readSearch } from "../../utils/search.utils";
 import validationSchemaAuthor from "../../validators/author.validator";
+import AuthorList from "./AuthorList";
 
 const Authors = () => {
   const history = useHistory();
@@ -27,11 +29,13 @@ const Authors = () => {
   const [expanded, setExpanded] = useState(false);
   const [authors, setAuthors] = useState(null);
   const [countries, setCountries] = useState(null);
-  const [search, setSearch] = useState(null);
+  const [search, setSearch] = useState(readSearch(location, initialSearch));
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
   const [count, setCount] = useState(0);
   const { loading, errorMessage, sendRequest, clearError } = useHttp();
+
+  console.log(limit);
 
   const formik = useFormik({
     initialValues: initialDataAdd,
@@ -72,8 +76,9 @@ const Authors = () => {
         "GET",
         null,
         { authorization: `Bearer ${auth.token}` },
-        { page: 1, limit: 9999 }
+        { page, limit, ...search }
       );
+      setCount(response.data.count);
       setAuthors(response.data.author);
     } catch (error) {}
   };
@@ -95,24 +100,24 @@ const Authors = () => {
   //     const newSearch = { ...search, [id]: value };
   //     setSearch(newSearch);
   //   };
-  //   const handleChangePage = (e, newPage) => setPage(newPage + 1);
-  //   const handleChangeRowsPerPage = (e) => {
-  //     setLimit(parseInt(e.target.value));
-  //     setPage(1);
-  //   };
-  //   const handleBookDelete = async (id) => {
-  //     try {
-  //       await sendRequest(
-  //         `${process.env.REACT_APP_BACKEND_URL}/api/books/${id}`,
-  //         "DELETE",
-  //         null,
-  //         { authorization: `Bearer ${auth.token}` },
-  //         null
-  //       );
-  //       setPage(1);
-  //       loadBooks();
-  //     } catch (error) {}
-  //   };
+  const handleChangePage = (e, newPage) => setPage(newPage + 1);
+  const handleChangeRowsPerPage = (e) => {
+    setLimit(parseInt(e.target.value));
+    setPage(1);
+  };
+  const handleAuthorDelete = async (id) => {
+    try {
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/authors/${id}`,
+        "DELETE",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        null
+      );
+      setPage(1);
+      loadAuthors();
+    } catch (error) {}
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -186,7 +191,22 @@ const Authors = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <p>Kuc</p>
+              {authors && countries && (
+                <AuthorList
+                  location={location}
+                  authors={authors}
+                  setPage={setPage}
+                  page={page}
+                  countries={countries}
+                  search={search}
+                  limit={limit}
+                  pageChange={handleChangePage}
+                  rowsChange={handleChangeRowsPerPage}
+                  resetData={resetData}
+                  count={count}
+                  deleteAuthor={handleAuthorDelete}
+                />
+              )}
             </AccordionDetails>
           </Accordion>
         </React.Fragment>
