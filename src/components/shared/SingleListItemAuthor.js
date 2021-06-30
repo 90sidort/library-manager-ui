@@ -7,25 +7,17 @@ import {
   IconButton,
   Tooltip,
 } from "@material-ui/core";
-import { MenuBook, Delete, KeyboardReturn } from "@material-ui/icons";
+import { CreateOutlined, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
 const SingleListItemAuthor = (props) => {
-  const { id, link, name, surname, country, deleteAuthor } = props;
-  const authorsString = (authors) => {
-    let authorsReady = ``;
-    authors.forEach((author) => {
-      authorsReady = `${authorsReady} ${author.name} ${author.surname}; `;
-    });
-    authorsReady.trim();
-    return authorsReady;
-  };
+  const { id, link, name, surname, deleteAuthor } = props;
 
   return (
     <ListItem>
       <ListItemAvatar>
         <Avatar>
-          <MenuBook />
+          <CreateOutlined />
         </Avatar>
       </ListItemAvatar>
       <Link

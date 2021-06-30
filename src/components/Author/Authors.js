@@ -26,7 +26,7 @@ const Authors = () => {
   const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState("list");
   const [authors, setAuthors] = useState(null);
   const [countries, setCountries] = useState(null);
   const [search, setSearch] = useState(readSearch(location, initialSearch));
@@ -34,8 +34,6 @@ const Authors = () => {
   const [limit, setLimit] = useState(25);
   const [count, setCount] = useState(0);
   const { loading, errorMessage, sendRequest, clearError } = useHttp();
-
-  console.log(limit);
 
   const formik = useFormik({
     initialValues: initialDataAdd,
@@ -80,7 +78,16 @@ const Authors = () => {
       );
       setCount(response.data.count);
       setAuthors(response.data.author);
-    } catch (error) {}
+      history.push({
+        pathname: "/authors",
+        search: `${response.request.responseURL.split("?")[1]}`,
+      });
+    } catch (error) {
+      history.push({
+        pathname: "/authors",
+        search: `${error.request.responseURL.split("?")[1]}`,
+      });
+    }
   };
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -92,14 +99,13 @@ const Authors = () => {
       pathname: "/authors",
     });
   };
-  //   const handleBookSearch = (e) => {
-  //     let { value } = e.target;
-  //     const { id } = e.target;
-  //     if (id === "available") value = value === "true" ? false : true;
-  //     setPage(1);
-  //     const newSearch = { ...search, [id]: value };
-  //     setSearch(newSearch);
-  //   };
+  const handleAuthorSearch = (e) => {
+    let { value } = e.target;
+    const { id } = e.target;
+    setPage(1);
+    const newSearch = { ...search, [id]: value };
+    setSearch(newSearch);
+  };
   const handleChangePage = (e, newPage) => setPage(newPage + 1);
   const handleChangeRowsPerPage = (e) => {
     setLimit(parseInt(e.target.value));
@@ -138,15 +144,15 @@ const Authors = () => {
             <CircularProgress
               color="secondary"
               style={{
-                width: "20%",
-                height: "20%",
+                width: "30%",
+                height: "30%",
                 margin: "auto",
               }}
             />
           </Grid>
         </Grid>
       )}
-      {!loading && (
+      {!loading && authors && countries && (
         <React.Fragment>
           <Accordion
             expanded={expanded === "add"}
@@ -164,15 +170,13 @@ const Authors = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {countries && (
-                <Grid container spacing={2} className={classes.root}>
-                  <Grid item xs={12} sm={6}>
-                    <div className={classes.form}>
-                      <AddAuthor countries={countries} formik={formik} />
-                    </div>
-                  </Grid>
+              <Grid container spacing={2} className={classes.root}>
+                <Grid item xs={12} sm={6}>
+                  <div className={classes.form}>
+                    <AddAuthor countries={countries} formik={formik} />
+                  </div>
                 </Grid>
-              )}
+              </Grid>
             </AccordionDetails>
           </Accordion>
           <Accordion
@@ -191,22 +195,21 @@ const Authors = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {authors && countries && (
-                <AuthorList
-                  location={location}
-                  authors={authors}
-                  setPage={setPage}
-                  page={page}
-                  countries={countries}
-                  search={search}
-                  limit={limit}
-                  pageChange={handleChangePage}
-                  rowsChange={handleChangeRowsPerPage}
-                  resetData={resetData}
-                  count={count}
-                  deleteAuthor={handleAuthorDelete}
-                />
-              )}
+              <AuthorList
+                location={location}
+                authors={authors}
+                setPage={setPage}
+                page={page}
+                countries={countries}
+                search={search}
+                limit={limit}
+                pageChange={handleChangePage}
+                rowsChange={handleChangeRowsPerPage}
+                resetData={resetData}
+                count={count}
+                authorSearch={handleAuthorSearch}
+                deleteAuthor={handleAuthorDelete}
+              />
             </AccordionDetails>
           </Accordion>
         </React.Fragment>

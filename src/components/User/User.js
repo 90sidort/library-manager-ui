@@ -100,8 +100,6 @@ const User = () => {
     getUser();
   }, []);
 
-  console.log(user);
-
   return (
     <React.Fragment>
       {errorMessage && (

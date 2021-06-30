@@ -7,8 +7,6 @@ import {
   List,
   Select,
   InputLabel,
-  FormControlLabel,
-  Checkbox,
   Button,
   FormControl,
 } from "@material-ui/core";
@@ -37,7 +35,7 @@ const AuthorList = (props) => {
     <option key={i} value={country._id}>{`${country.name}`}</option>
   ));
   optionsCountries.unshift(allOptions);
-  console.log(limit, count);
+
   return (
     <Grid item xs={12} md={12}>
       <Typography variant="h6" className={classes.title}>
@@ -54,7 +52,7 @@ const AuthorList = (props) => {
       <form className={classes.form} noValidate autoComplete="off">
         <TextField
           id="name"
-          label="name"
+          label="Name"
           variant="outlined"
           onChange={authorSearch}
           value={search.name}
@@ -62,14 +60,14 @@ const AuthorList = (props) => {
         />
         <TextField
           id="surname"
-          label="surname"
+          label="Surname"
           variant="outlined"
           onChange={authorSearch}
           value={search.surname}
           className={classes.fields}
         />
         <FormControl className={classes.fields}>
-          <InputLabel htmlFor="genre">Genre</InputLabel>
+          <InputLabel htmlFor="genre">Country</InputLabel>
           <Select
             native
             variant="outlined"

@@ -26,7 +26,7 @@ const Books = () => {
   const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState("list");
   const [authors, setAuthors] = useState(null);
   const [books, setBooks] = useState(null);
   const [genres, setGenres] = useState(null);
@@ -162,15 +162,15 @@ const Books = () => {
             <CircularProgress
               color="secondary"
               style={{
-                width: "20%",
-                height: "20%",
+                width: "30%",
+                height: "30%",
                 margin: "auto",
               }}
             />
           </Grid>
         </Grid>
       )}
-      {!loading && (
+      {!loading && authors && books && genres && (
         <React.Fragment>
           <Accordion
             expanded={expanded === "add"}
@@ -188,19 +188,17 @@ const Books = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {authors && genres && (
-                <Grid container spacing={2} className={classes.root}>
-                  <Grid item xs={12} sm={6}>
-                    <div className={classes.form}>
-                      <AddBook
-                        authors={authors}
-                        genres={genres}
-                        formik={formik}
-                      />
-                    </div>
-                  </Grid>
+              <Grid container spacing={2} className={classes.root}>
+                <Grid item xs={12} sm={6}>
+                  <div className={classes.form}>
+                    <AddBook
+                      authors={authors}
+                      genres={genres}
+                      formik={formik}
+                    />
+                  </div>
                 </Grid>
-              )}
+              </Grid>
             </AccordionDetails>
           </Accordion>
           <Accordion
@@ -219,23 +217,21 @@ const Books = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {books && authors && genres && (
-                <BookList
-                  setPage={setPage}
-                  authors={authors}
-                  genres={genres}
-                  books={books}
-                  search={search}
-                  page={page}
-                  limit={limit}
-                  count={count}
-                  bookSearch={handleBookSearch}
-                  pageChange={handleChangePage}
-                  rowsChange={handleChangeRowsPerPage}
-                  resetData={resetData}
-                  deleteBook={handleBookDelete}
-                />
-              )}
+              <BookList
+                setPage={setPage}
+                authors={authors}
+                genres={genres}
+                books={books}
+                search={search}
+                page={page}
+                limit={limit}
+                count={count}
+                bookSearch={handleBookSearch}
+                pageChange={handleChangePage}
+                rowsChange={handleChangeRowsPerPage}
+                resetData={resetData}
+                deleteBook={handleBookDelete}
+              />
             </AccordionDetails>
           </Accordion>
         </React.Fragment>

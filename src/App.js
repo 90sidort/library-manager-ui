@@ -11,6 +11,7 @@ import User from "./components/User/User";
 import Book from "./components/Book/Book";
 import SignUp from "./components/Sign/SignUp";
 import SignIn from "./components/Sign/SignIn";
+import Author from "./components/Author/Author";
 
 function App() {
   const { token, login, logout, userId, admin, userName } = useAuth();
@@ -33,6 +34,9 @@ function App() {
         </Route>
         <Route path="/books/:bid" exact={true}>
           <Book />
+        </Route>
+        <Route path="/authors/:aid" exact={true}>
+          <Author />
         </Route>
       </Switch>
     );

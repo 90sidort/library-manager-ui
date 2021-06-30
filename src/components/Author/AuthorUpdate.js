@@ -1,41 +1,38 @@
 import React from "react";
 import {
-  Typography,
-  TextField,
-  Grid,
-  Button,
   Container,
   CssBaseline,
+  Typography,
+  Grid,
+  TextField,
+  Button,
   MenuItem,
 } from "@material-ui/core";
 
-import useStyles from "../../styles/addbook.styles";
+import useStyles from "../../styles/signup.styles";
 
-const AddAuthor = (props) => {
+const AuthorUpdate = (props) => {
+  const { formik, countries } = props;
   const classes = useStyles();
-  const { countries, formik } = props;
-  const defaultOption = (
-    <option value="select" disabled>{`Select country`}</option>
-  );
   const optionsCountries = countries.map((country, i) => (
     <MenuItem key={i} value={country._id}>
       {country.name}
     </MenuItem>
   ));
-  optionsCountries.unshift(defaultOption);
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-          Create new author
+          Update author
         </Typography>
         <form className={classes.form} onSubmit={formik.handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                required
                 id="name"
                 name="name"
                 label="Name"
@@ -49,6 +46,7 @@ const AddAuthor = (props) => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                required
                 id="surname"
                 name="surname"
                 label="Surname"
@@ -62,6 +60,7 @@ const AddAuthor = (props) => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                required
                 select
                 id="country"
                 name="country"
@@ -99,17 +98,14 @@ const AddAuthor = (props) => {
             </Grid>
           </Grid>
           <Button
-            disabled={
-              JSON.stringify(formik.errors) !== "{}" ||
-              JSON.stringify(formik.touched) === "{}"
-            }
+            disabled={JSON.stringify(formik.errors) !== "{}"}
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
           >
-            Add new author
+            Save changes
           </Button>
           <Button
             fullWidth
@@ -126,4 +122,4 @@ const AddAuthor = (props) => {
   );
 };
 
-export default AddAuthor;
+export default AuthorUpdate;
