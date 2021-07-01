@@ -10,7 +10,9 @@ import {
   Typography,
   CardActions,
   Button,
+  Link,
 } from "@material-ui/core";
+import { Link as RouterLink } from "react-router-dom";
 
 import { AuthContext } from "../../context/auth.context";
 import SimpleModal from "../shared/SimpleModal";
@@ -256,6 +258,14 @@ const Book = (props) => {
                         Show borrower
                       </Button>
                     )}
+                    <Button size="small">
+                      <RouterLink
+                        to={`/reviews/${book._id}`}
+                        style={{ textDecoration: "none" }}
+                      >
+                        <Link variant="body2">Reviews</Link>
+                      </RouterLink>
+                    </Button>
                     <Button size="small" onClick={() => history.goBack()}>
                       Go back
                     </Button>
