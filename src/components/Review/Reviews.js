@@ -59,6 +59,31 @@ const Reviews = (props) => {
     } catch (error) {}
   };
 
+  const handleReviewReport = async (id) => {
+    try {
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/reviews/${id}`,
+        "PATCH",
+        { reported: true },
+        { authorization: `Bearer ${auth.token}` },
+        null
+      );
+    } catch (error) {}
+  };
+
+  const handleReviewDelete = async (id) => {
+    try {
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/api/reviews/${id}`,
+        "DELETE",
+        null,
+        { authorization: `Bearer ${auth.token}` },
+        null
+      );
+      loadReviews();
+    } catch (error) {}
+  };
+
   useEffect(() => {
     loadReviews();
   }, [auth.token]);
@@ -75,6 +100,10 @@ const Reviews = (props) => {
             review={review.review}
             title={review.title}
             user={review.user}
+            reviewDelete={handleReviewDelete}
+            userId={auth.userId}
+            admin={auth.admin}
+            reviewReport={handleReviewReport}
           />
         ))}
       </List>
