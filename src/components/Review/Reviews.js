@@ -16,18 +16,22 @@ const Reviews = (props) => {
   const auth = useContext(AuthContext);
   const history = useHistory();
   const location = useLocation();
+  const startValues = {
+    title: "",
+    review: "",
+    rating: 3,
+    book: location.pathname.substring(9),
+    user: auth.userId,
+  };
   const [formVisible, setFormVisible] = useState(false);
+  const [editVisible, setEditVisible] = useState(false);
+  const [initialValues, setInitialValues] = useState(startValues);
+  const [rid, setRid] = useState("");
   const [reviews, setReviews] = useState(null);
   const { loading, errorMessage, sendRequest, clearError } = useHttp();
 
   const formikAdd = useFormik({
-    initialValues: {
-      title: "",
-      review: "",
-      rating: 3,
-      book: location.pathname.substring(9),
-      user: auth.userId,
-    },
+    initialValues: startValues,
     validationSchema,
     validateOnBlur: true,
     onSubmit: async (values, { setSubmitting }) => {
@@ -36,6 +40,27 @@ const Reviews = (props) => {
         await sendRequest(
           `${process.env.REACT_APP_BACKEND_URL}/api/reviews`,
           "POST",
+          { ...values },
+          { authorization: `Bearer ${auth.token}` },
+          null
+        );
+        setSubmitting(false);
+        setFormVisible(false);
+      } catch (error) {}
+    },
+  });
+
+  const formikEdit = useFormik({
+    initialValues,
+    enableReinitialize: true,
+    validationSchema,
+    validateOnBlur: true,
+    onSubmit: async (values, { setSubmitting }) => {
+      setSubmitting(true);
+      try {
+        await sendRequest(
+          `${process.env.REACT_APP_BACKEND_URL}/api/reviews/${rid}`,
+          "PUT",
           { ...values },
           { authorization: `Bearer ${auth.token}` },
           null
@@ -84,6 +109,32 @@ const Reviews = (props) => {
     } catch (error) {}
   };
 
+  const handleReviewEdit = async (id) => {
+    setEditVisible(true);
+    const editValues = await reviews.filter(
+      (review) => review._id.toString() === id
+    );
+    const setEditValues = { ...editValues[0] };
+    setRid(setEditValues._id);
+    setInitialValues({
+      title: setEditValues.title,
+      review: setEditValues.review,
+      rating: setEditValues.rating,
+      book: setEditValues.book._id,
+      user: setEditValues.user._id,
+    });
+  };
+
+  const handleReviewCancel = () => {
+    setEditVisible(false);
+    formikEdit.resetForm();
+  };
+
+  const handleReviewAdd = () => {
+    setFormVisible(!formVisible);
+    setEditVisible(false);
+  };
+
   useEffect(() => {
     loadReviews();
   }, [auth.token]);
@@ -94,16 +145,13 @@ const Reviews = (props) => {
       <List className={classes.root}>
         {reviews.map((review) => (
           <Review
-            id={review._id}
             classes={classes}
-            rating={review.rating}
-            review={review.review}
-            title={review.title}
-            user={review.user}
+            review={review}
             reviewDelete={handleReviewDelete}
             userId={auth.userId}
             admin={auth.admin}
             reviewReport={handleReviewReport}
+            reviewEdit={handleReviewEdit}
           />
         ))}
       </List>
@@ -134,10 +182,13 @@ const Reviews = (props) => {
       <Button size="small" onClick={() => history.goBack()}>
         Go back
       </Button>
-      <Button size="small" onClick={() => setFormVisible(!formVisible)}>
+      <Button size="small" onClick={() => handleReviewAdd()}>
         Add review
       </Button>
       {formVisible && <AddReview formik={formikAdd} />}
+      {editVisible && (
+        <AddReview formik={formikEdit} cancelButton={handleReviewCancel} />
+      )}
       {body}
     </div>
   );

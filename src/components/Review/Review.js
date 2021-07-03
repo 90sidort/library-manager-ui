@@ -9,20 +9,17 @@ import {
   IconButton,
   Tooltip,
 } from "@material-ui/core";
-import { Comment, StarRate, Delete, Report } from "@material-ui/icons";
+import { Comment, StarRate, Delete, Report, Edit } from "@material-ui/icons";
 
 const Review = (props) => {
   const {
-    rating,
-    review,
-    title,
-    user,
+    review: { rating, review, title, user, _id: id },
     classes,
-    id,
     reviewDelete,
     userId,
     admin,
     reviewReport,
+    reviewEdit,
   } = props;
   let reviewStars = [];
   for (let i = 0; i < rating; i++) {
@@ -71,6 +68,17 @@ const Review = (props) => {
             <Report />
           </IconButton>
         </Tooltip>
+        {user._id === userId && (
+          <Tooltip title="Edit" aria-label="edit">
+            <IconButton
+              edge="end"
+              aria-label="edit"
+              onClick={() => reviewEdit(id)}
+            >
+              <Edit />
+            </IconButton>
+          </Tooltip>
+        )}
         {deleteButton && (
           <Tooltip title="Delete" aria-label="delete">
             <IconButton

@@ -12,14 +12,14 @@ import useStyles from "../../styles/addbook.styles";
 
 const AddReview = (props) => {
   const classes = useStyles();
-  const { formik } = props;
+  const { formik, cancelButton } = props;
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-          Add review
+          {cancelButton ? "Update review" : "Add review"}
         </Typography>
         <form className={classes.form} onSubmit={formik.handleSubmit}>
           <Grid container spacing={2}>
@@ -69,17 +69,14 @@ const AddReview = (props) => {
             </Grid>
           </Grid>
           <Button
-            disabled={
-              JSON.stringify(formik.errors) !== "{}" ||
-              JSON.stringify(formik.touched) === "{}"
-            }
+            disabled={JSON.stringify(formik.errors) !== "{}"}
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
           >
-            Add review
+            {cancelButton ? "Update review" : "Add review"}
           </Button>
           <Button
             fullWidth
@@ -90,6 +87,17 @@ const AddReview = (props) => {
           >
             Reset form
           </Button>
+          {cancelButton && (
+            <Button
+              fullWidth
+              variant="contained"
+              color="default"
+              className={classes.submit}
+              onClick={() => cancelButton()}
+            >
+              Cancel
+            </Button>
+          )}
         </form>
       </div>
     </Container>
