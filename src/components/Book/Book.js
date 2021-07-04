@@ -158,6 +158,8 @@ const Book = (props) => {
     getBook();
   }, [formikEdit.isSubmitting, formikBorrow.isSubmitting]);
 
+  console.log(history);
+
   return (
     <React.Fragment>
       {errorMessage && (

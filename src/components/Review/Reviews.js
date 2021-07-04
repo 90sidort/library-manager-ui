@@ -34,7 +34,7 @@ const Reviews = (props) => {
     initialValues: startValues,
     validationSchema,
     validateOnBlur: true,
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
       try {
         await sendRequest(
@@ -45,6 +45,7 @@ const Reviews = (props) => {
           null
         );
         setSubmitting(false);
+        resetForm();
         setFormVisible(false);
       } catch (error) {}
     },
@@ -66,7 +67,7 @@ const Reviews = (props) => {
           null
         );
         setSubmitting(false);
-        setFormVisible(false);
+        setEditVisible(false);
       } catch (error) {}
     },
   });
@@ -137,7 +138,7 @@ const Reviews = (props) => {
 
   useEffect(() => {
     loadReviews();
-  }, [auth.token]);
+  }, [auth.token, formikAdd.isSubmitting, formikEdit.isSubmitting]);
 
   let body;
   if (reviews && reviews.length > 0) {
@@ -157,7 +158,7 @@ const Reviews = (props) => {
       </List>
     );
   } else {
-    body = <p>No reviews</p>;
+    body = <p>No reviews, maybe write one?</p>;
   }
 
   return (

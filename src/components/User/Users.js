@@ -6,6 +6,7 @@ import {
   TablePagination,
   TextField,
   CircularProgress,
+  Button,
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 
@@ -16,16 +17,17 @@ import useStyles from "../../styles/users.styles";
 import { useHttp } from "../../hooks/http.hook";
 
 const Users = () => {
+  const initialSearchData = {
+    name: "",
+    surname: "",
+    email: "",
+  };
   const history = useHistory();
   const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
   const readSearch = () => {
-    const stateData = {
-      name: "",
-      surname: "",
-      email: "",
-    };
+    const stateData = { ...initialSearchData };
     if (location.search) {
       const searchQuery = location.search.substring(1);
       const queries = searchQuery.split("&");
@@ -47,6 +49,12 @@ const Users = () => {
   const handleChangeRowsPerPage = (e) => {
     setLimit(parseInt(e.target.value));
     setPage(1);
+  };
+  const resetData = () => {
+    setSearch(initialSearchData);
+    history.push({
+      pathname: "/users",
+    });
   };
   const handleSearchChange = (e) => {
     const { id, value } = e.target;
@@ -129,6 +137,14 @@ const Users = () => {
               className={classes.fields}
             />
           </form>
+          <Button
+            className={classes.button}
+            onClick={resetData}
+            variant="contained"
+            color="secondary"
+          >
+            Reset
+          </Button>
           <TablePagination
             component="div"
             page={page - 1}

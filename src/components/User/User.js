@@ -43,7 +43,7 @@ const User = () => {
     validationSchema,
     enableReinitialize: true,
     validateOnBlur: true,
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
       try {
         await sendRequest(
@@ -55,7 +55,9 @@ const User = () => {
           { authorization: `Bearer ${auth.token}` },
           { uid: location.pathname.substring(7) }
         );
+        resetForm();
         setSubmitting(false);
+        showEdit(false);
       } catch (error) {}
     },
   });

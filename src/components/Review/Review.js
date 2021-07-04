@@ -50,7 +50,7 @@ const Review = (props) => {
           </React.Fragment>
         }
       />
-      <ListItemSecondaryAction>
+      <ListItemSecondaryAction style={{ top: "8%" }}>
         <Tooltip
           title={`${reviewStars.length.toString()}/6`}
           aria-label="rating"

@@ -58,6 +58,8 @@ const Books = () => {
 
   const loadBooks = async () => {
     let newRoute;
+    search.publisher = search.publisher.replaceAll("+", " ");
+    search.title = search.title.replaceAll("+", " ");
     try {
       const response = await sendRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/books`,
@@ -69,12 +71,14 @@ const Books = () => {
       setCount(response.data.count);
       setBooks(response.data.books);
       newRoute = response.request.responseURL.split("?")[1];
+      newRoute = newRoute.replace("%2B", "+");
       history.push({
         pathname: "/",
         search: `${newRoute}`,
       });
     } catch (error) {
       newRoute = error.request.responseURL.split("?")[1];
+      newRoute = newRoute.replace("%2B", "+");
       history.push({
         pathname: "/",
         search: `${newRoute}`,
