@@ -56,6 +56,7 @@ const User = () => {
           { uid: location.pathname.substring(7) }
         );
         resetForm();
+        getUser();
         setSubmitting(false);
         showEdit(false);
       } catch (error) {}

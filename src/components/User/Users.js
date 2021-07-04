@@ -33,7 +33,7 @@ const Users = () => {
       const queries = searchQuery.split("&");
       queries.forEach((query) => {
         const variables = query.split("=");
-        stateData[variables[0]] = variables[1];
+        stateData[variables[0]] = variables[1].replaceAll("%20", " ");
       });
     }
     return stateData;

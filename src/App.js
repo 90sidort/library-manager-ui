@@ -13,6 +13,7 @@ import SignUp from "./components/Sign/SignUp";
 import SignIn from "./components/Sign/SignIn";
 import Author from "./components/Author/Author";
 import Reviews from "./components/Review/Reviews";
+import Genres from "./components/Genre/Genres";
 
 function App() {
   const { token, login, logout, userId, admin, userName } = useAuth();
@@ -29,6 +30,9 @@ function App() {
         </Route>
         <Route path="/authors" exact={true}>
           <Authors />
+        </Route>
+        <Route path="/genres" exact={true}>
+          <Genres />
         </Route>
         <Route path="/users/:uid" exact={true}>
           <User />

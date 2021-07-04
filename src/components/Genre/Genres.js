@@ -12,38 +12,36 @@ import { useHistory, useLocation } from "react-router-dom";
 import { ExpandMore } from "@material-ui/icons";
 
 import SimpleModal from "../shared/SimpleModal";
-import { initialSearch, initialDataAdd } from "../../utils/authors.utils";
-import AddAuthor from "../Author/AddAuthor";
+import GenresList from "./GenresList";
 import useStyles from "../../styles/books.styles";
 import { AuthContext } from "../../context/auth.context";
 import { useHttp } from "../../hooks/http.hook";
 import { readSearch } from "../../utils/search.utils";
-import validationSchemaAuthor from "../../validators/author.validator";
-import AuthorList from "./AuthorList";
+import validationSchemaGenre from "../../validators/genre.validator";
+import AddGenre from "./AddGenre";
 
-const Authors = () => {
+const Genres = () => {
   const history = useHistory();
   const location = useLocation();
   const classes = useStyles();
   const auth = useContext(AuthContext);
   const [expanded, setExpanded] = useState("list");
-  const [authors, setAuthors] = useState(null);
-  const [countries, setCountries] = useState(null);
-  const [search, setSearch] = useState(readSearch(location, initialSearch));
+  const [genres, setGenres] = useState(null);
+  const [search, setSearch] = useState(readSearch(location, { name: "" }));
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
   const [count, setCount] = useState(0);
   const { loading, errorMessage, sendRequest, clearError } = useHttp();
 
   const formik = useFormik({
-    initialValues: initialDataAdd,
-    validationSchema: validationSchemaAuthor,
+    initialValues: { name: "" },
+    validationSchema: validationSchemaGenre,
     validateOnBlur: true,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
       try {
         await sendRequest(
-          `${process.env.REACT_APP_BACKEND_URL}/api/authors`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/genres`,
           "POST",
           { ...values },
           { authorization: `Bearer ${auth.token}` },
@@ -55,38 +53,25 @@ const Authors = () => {
     },
   });
 
-  const loadCountries = async () => {
-    try {
-      const response = await sendRequest(
-        `${process.env.REACT_APP_BACKEND_URL}/api/countries`,
-        "GET",
-        null,
-        { authorization: `Bearer ${auth.token}` },
-        { page: 1, limit: 9999 }
-      );
-      setCountries(response.data.countries);
-    } catch (error) {}
-  };
-  const loadAuthors = async () => {
+  const loadGenres = async () => {
     try {
       search.name = search.name.replaceAll("+", " ");
-      search.surname = search.surname.replaceAll("+", " ");
       const response = await sendRequest(
-        `${process.env.REACT_APP_BACKEND_URL}/api/authors`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/genres`,
         "GET",
         null,
         { authorization: `Bearer ${auth.token}` },
         { page, limit, ...search }
       );
       setCount(response.data.count);
-      setAuthors(response.data.author);
+      setGenres(response.data.genres);
       history.push({
-        pathname: "/authors",
+        pathname: "/genres",
         search: `${response.request.responseURL.split("?")[1]}`,
       });
     } catch (error) {
       history.push({
-        pathname: "/authors",
+        pathname: "/genres",
         search: `${error.request.responseURL.split("?")[1]}`,
       });
     }
@@ -96,12 +81,12 @@ const Authors = () => {
     setExpanded(isExpanded ? panel : false);
   };
   const resetData = () => {
-    setSearch(initialSearch);
+    setSearch({ name: "" });
     history.push({
-      pathname: "/authors",
+      pathname: "/genres",
     });
   };
-  const handleAuthorSearch = (e) => {
+  const handleGenreSearch = (e) => {
     let { value } = e.target;
     const { id } = e.target;
     setPage(1);
@@ -113,24 +98,23 @@ const Authors = () => {
     setLimit(parseInt(e.target.value));
     setPage(1);
   };
-  const handleAuthorDelete = async (id) => {
+  const handleGenreDelete = async (id) => {
     try {
       await sendRequest(
-        `${process.env.REACT_APP_BACKEND_URL}/api/authors/${id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/genres/${id}`,
         "DELETE",
         null,
         { authorization: `Bearer ${auth.token}` },
         null
       );
       setPage(1);
-      loadAuthors();
+      loadGenres();
     } catch (error) {}
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      loadAuthors();
-      if (!countries) loadCountries();
+      loadGenres();
     }, 1000);
     return () => clearTimeout(timer);
   }, [auth.token, limit, page, search]);
@@ -154,7 +138,7 @@ const Authors = () => {
           </Grid>
         </Grid>
       )}
-      {!loading && authors && countries && (
+      {!loading && genres && (
         <React.Fragment>
           <Accordion
             expanded={expanded === "add"}
@@ -166,16 +150,16 @@ const Authors = () => {
               aria-controls="add-content"
               id="add-header"
             >
-              <Typography className={classes.heading}>Add author</Typography>
+              <Typography className={classes.heading}>Add genre</Typography>
               <Typography className={classes.secondaryHeading}>
-                Add new author to the database
+                Add new genre to the database
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2} className={classes.root}>
                 <Grid item xs={12} sm={6}>
                   <div className={classes.form}>
-                    <AddAuthor countries={countries} formik={formik} />
+                    <AddGenre formik={formik} />
                   </div>
                 </Grid>
               </Grid>
@@ -191,26 +175,25 @@ const Authors = () => {
               aria-controls="list-content"
               id="list-header"
             >
-              <Typography className={classes.heading}>Authors</Typography>
+              <Typography className={classes.heading}>Genres</Typography>
               <Typography className={classes.secondaryHeading}>
-                Search for authors
+                Search for genres
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <AuthorList
+              <GenresList
                 location={location}
-                authors={authors}
                 setPage={setPage}
                 page={page}
-                countries={countries}
                 search={search}
                 limit={limit}
                 pageChange={handleChangePage}
                 rowsChange={handleChangeRowsPerPage}
                 resetData={resetData}
                 count={count}
-                authorSearch={handleAuthorSearch}
-                deleteAuthor={handleAuthorDelete}
+                genres={genres}
+                genreSearch={handleGenreSearch}
+                deleteGenre={handleGenreDelete}
               />
             </AccordionDetails>
           </Accordion>
@@ -220,4 +203,4 @@ const Authors = () => {
   );
 };
 
-export default Authors;
+export default Genres;
