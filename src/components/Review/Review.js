@@ -20,6 +20,7 @@ const Review = (props) => {
     admin,
     reviewReport,
     reviewEdit,
+    adminReview,
   } = props;
   let reviewStars = [];
   for (let i = 0; i < rating; i++) {
@@ -59,15 +60,17 @@ const Review = (props) => {
             {reviewStars}
           </IconButton>
         </Tooltip>
-        <Tooltip title={`Report`} aria-label="report">
-          <IconButton
-            edge="end"
-            aria-label="report"
-            onClick={() => reviewReport(id)}
-          >
-            <Report />
-          </IconButton>
-        </Tooltip>
+        {adminReview !== true && (
+          <Tooltip title={`Report`} aria-label="report">
+            <IconButton
+              edge="end"
+              aria-label="report"
+              onClick={() => reviewReport(id)}
+            >
+              <Report />
+            </IconButton>
+          </Tooltip>
+        )}
         {user._id === userId && (
           <Tooltip title="Edit" aria-label="edit">
             <IconButton

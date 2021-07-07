@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 const SingleListItemGenre = (props) => {
   const { id, deleteGenre, link, name } = props;
   return (
-    <ListItem>
+    <ListItem key={id}>
       <ListItemAvatar>
         <Avatar>
           <LibraryBooks />

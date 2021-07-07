@@ -14,7 +14,7 @@ const SingleListItemAuthor = (props) => {
   const { id, link, name, surname, deleteAuthor } = props;
 
   return (
-    <ListItem>
+    <ListItem key={id}>
       <ListItemAvatar>
         <Avatar>
           <CreateOutlined />

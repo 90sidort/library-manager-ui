@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 const SingleListItemUser = (props) => {
   const { id, deleteUser, link, surname, name } = props;
   return (
-    <ListItem>
+    <ListItem key={id}>
       <ListItemAvatar>
         <Avatar>
           <AccountCircle />

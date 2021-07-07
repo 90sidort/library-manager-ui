@@ -11,11 +11,11 @@ import {
 import SingleListItemGenre from "../shared/SingleListItemGenre";
 import useStyles from "../../styles/booklist.styles";
 
-const GenresList = (props) => {
+const CountriesList = (props) => {
   const classes = useStyles();
   const {
-    genres,
-    genreSearch,
+    countries,
+    countrySearch,
     rowsChange,
     pageChange,
     limit,
@@ -23,13 +23,13 @@ const GenresList = (props) => {
     search,
     count,
     resetData,
-    deleteGenre,
+    deleteCountry,
   } = props;
 
   return (
     <Grid item xs={12} md={12}>
       <Typography variant="h6" className={classes.title}>
-        Genres
+        Countries
       </Typography>
       <Button
         className={classes.button}
@@ -44,7 +44,7 @@ const GenresList = (props) => {
           id="name"
           label="Name"
           variant="outlined"
-          onChange={genreSearch}
+          onChange={countrySearch}
           value={search.name}
           className={classes.fields}
         />
@@ -58,20 +58,20 @@ const GenresList = (props) => {
         onChangeRowsPerPage={rowsChange}
       />
       <div className={classes.demo}>
-        {genres && (
+        {countries && (
           <List>
-            {genres.length > 0 ? (
-              genres.map((genre) => (
+            {countries.length > 0 ? (
+              countries.map((country) => (
                 <SingleListItemGenre
-                  key={genre._id}
-                  id={genre._id}
-                  name={genre.name}
-                  link={`genre/${genre._id}`}
-                  deleteGenre={deleteGenre}
+                  key={country._id}
+                  id={country._id}
+                  name={country.name}
+                  link={`country/${country._id}`}
+                  deleteCountry={deleteCountry}
                 />
               ))
             ) : (
-              <p key={1}>No genres match search criteria</p>
+              <p key={1}>No countries match search criteria</p>
             )}
           </List>
         )}
@@ -80,4 +80,4 @@ const GenresList = (props) => {
   );
 };
 
-export default GenresList;
+export default CountriesList;

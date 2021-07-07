@@ -36,7 +36,7 @@ const SingleListItemBook = (props) => {
   if (overdue) fine = calculateFine(endDate);
 
   return (
-    <ListItem>
+    <ListItem key={id}>
       <ListItemAvatar>
         <Avatar>
           <MenuBook />

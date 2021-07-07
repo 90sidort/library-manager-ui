@@ -85,13 +85,15 @@ export default function ButtonAppBar() {
                 </Link>
               </Tooltip>
               <Tooltip title="Reviews" aria-label="reviews">
-                <Link to="/reviews">
+                <Link to="/review">
                   <RateReview className={classes.icon} color="inherit" />
                 </Link>
               </Tooltip>
               <Tooltip title="Logout" aria-label="logout">
                 <Button onClick={auth.logout}>
-                  <ExitToApp className={classes.icon} color="inherit" />
+                  <Link to="/signin">
+                    <ExitToApp className={classes.icon} color="inherit" />
+                  </Link>
                 </Button>
               </Tooltip>
             </React.Fragment>

@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from "react-router-dom";
 
 import { AuthContext } from "./context/auth.context";
 import { useAuth } from "./hooks/auth.hook";
@@ -14,11 +19,15 @@ import SignIn from "./components/Sign/SignIn";
 import Author from "./components/Author/Author";
 import Reviews from "./components/Review/Reviews";
 import Genres from "./components/Genre/Genres";
+import Genre from "./components/Genre/Genre";
+import Countries from "./components/Country/Countries";
+import Country from "./components/Country/Country";
+import AdminReview from "./components/Review/AdminReview";
 
 function App() {
   const { token, login, logout, userId, admin, userName } = useAuth();
   let appRoutes;
-
+  console.log(token);
   if (token)
     appRoutes = (
       <Switch>
@@ -34,6 +43,15 @@ function App() {
         <Route path="/genres" exact={true}>
           <Genres />
         </Route>
+        <Route path="/genre/:gid" exact={true}>
+          <Genre />
+        </Route>
+        <Route path="/countries" exact={true}>
+          <Countries />
+        </Route>
+        <Route path="/country/:cid" exact={true}>
+          <Country />
+        </Route>
         <Route path="/users/:uid" exact={true}>
           <User />
         </Route>
@@ -45,6 +63,9 @@ function App() {
         </Route>
         <Route path="/reviews/:bid" exact={true}>
           <Reviews />
+        </Route>
+        <Route path="/review/" exact={true}>
+          <AdminReview />
         </Route>
       </Switch>
     );
