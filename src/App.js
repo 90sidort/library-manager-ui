@@ -23,12 +23,13 @@ import Genre from "./components/Genre/Genre";
 import Countries from "./components/Country/Countries";
 import Country from "./components/Country/Country";
 import AdminReview from "./components/Review/AdminReview";
+import NotFound from "./components/shared/NotFound";
 
 function App() {
   const { token, login, logout, userId, admin, userName } = useAuth();
   let appRoutes;
   console.log(token);
-  if (token)
+  if (token && admin)
     appRoutes = (
       <Switch>
         <Route path="/" exact={true}>
@@ -67,6 +68,19 @@ function App() {
         <Route path="/review/" exact={true}>
           <AdminReview />
         </Route>
+        <Route component={NotFound}></Route>
+      </Switch>
+    );
+  else if (token && !admin)
+    appRoutes = (
+      <Switch>
+        <Route path="/" exact={true}>
+          <Books />
+        </Route>
+        <Route path="/profile/:uid" exact={true}>
+          <User />
+        </Route>
+        <Route component={NotFound}></Route>
       </Switch>
     );
   else
@@ -78,6 +92,7 @@ function App() {
         <Route path="/signin" exact={true}>
           <SignIn />
         </Route>
+        <Route component={NotFound}></Route>
       </Switch>
     );
 

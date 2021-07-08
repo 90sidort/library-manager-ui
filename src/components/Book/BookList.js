@@ -166,7 +166,7 @@ const BookList = (props) => {
           className={classes.fields}
           control={
             <Checkbox
-              checked={search.available === true ? true : false}
+              checked={search.available ? true : false}
               onChange={bookSearch}
               name="available"
               id="available"

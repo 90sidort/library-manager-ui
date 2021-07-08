@@ -176,35 +176,37 @@ const Books = () => {
       )}
       {!loading && authors && books && genres && (
         <React.Fragment>
-          <Accordion
-            expanded={expanded === "add"}
-            onChange={handleChange("add")}
-            className={classes.form}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-              aria-controls="add-content"
-              id="add-header"
+          {auth.admin && (
+            <Accordion
+              expanded={expanded === "add"}
+              onChange={handleChange("add")}
+              className={classes.form}
             >
-              <Typography className={classes.heading}>Add</Typography>
-              <Typography className={classes.secondaryHeading}>
-                Add new book to the database
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Grid container spacing={2} className={classes.root}>
-                <Grid item xs={12} sm={6}>
-                  <div className={classes.form}>
-                    <AddBook
-                      authors={authors}
-                      genres={genres}
-                      formik={formik}
-                    />
-                  </div>
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                aria-controls="add-content"
+                id="add-header"
+              >
+                <Typography className={classes.heading}>Add</Typography>
+                <Typography className={classes.secondaryHeading}>
+                  Add new book to the database
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid container spacing={2} className={classes.root}>
+                  <Grid item xs={12} sm={6}>
+                    <div className={classes.form}>
+                      <AddBook
+                        authors={authors}
+                        genres={genres}
+                        formik={formik}
+                      />
+                    </div>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </AccordionDetails>
-          </Accordion>
+              </AccordionDetails>
+            </Accordion>
+          )}
           <Accordion
             expanded={expanded === "list"}
             onChange={handleChange("list")}

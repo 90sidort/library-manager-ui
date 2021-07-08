@@ -8,10 +8,13 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import { MenuBook, Delete, KeyboardReturn } from "@material-ui/icons";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../context/auth.context";
 import calculateFine from "../../utils/fine.utils";
 
 const SingleListItemBook = (props) => {
+  const auth = useContext(AuthContext);
   const {
     id,
     link,
@@ -60,7 +63,7 @@ const SingleListItemBook = (props) => {
         {deleteBook && <ListItemText secondary={`${published}`} />}
       </Link>
       <ListItemSecondaryAction>
-        {deleteBook && (
+        {deleteBook && auth.admin && (
           <Tooltip title="Delete" aria-label="delete">
             <IconButton
               edge="end"
@@ -71,7 +74,7 @@ const SingleListItemBook = (props) => {
             </IconButton>
           </Tooltip>
         )}
-        {returnBook && (
+        {returnBook && auth.admin && (
           <Tooltip title="Return" aria-label="return">
             <IconButton
               edge="end"
