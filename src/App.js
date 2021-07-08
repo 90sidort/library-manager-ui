@@ -77,8 +77,14 @@ function App() {
         <Route path="/" exact={true}>
           <Books />
         </Route>
-        <Route path="/profile/:uid" exact={true}>
-          <User />
+        <Route path="/books/:bid" exact={true}>
+          <Book />
+        </Route>
+        <Route path="/users/:uid" exact={true}>
+          <User profile={true} />
+        </Route>
+        <Route path="/reviews/:bid" exact={true}>
+          <Reviews />
         </Route>
         <Route component={NotFound}></Route>
       </Switch>

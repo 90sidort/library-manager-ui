@@ -96,7 +96,7 @@ export default function ButtonAppBar() {
     body = (
       <React.Fragment>
         <Tooltip title="Profile" aria-label="profile">
-          <Link to="/profile">
+          <Link to={`/users/${auth.userId}`}>
             <PeopleAlt className={classes.icon} color="inherit" />
           </Link>
         </Tooltip>

@@ -31,7 +31,9 @@ const NotFound = () => {
             to={auth.token ? `/` : `/signin`}
             style={{ textDecoration: "none" }}
           >
-            <Link variant="body2">Sign page</Link>
+            <Link variant="body2">
+              {auth.token ? `Home page` : `Sign page`}
+            </Link>
           </RouterLink>
         </Button>
       </CardActions>

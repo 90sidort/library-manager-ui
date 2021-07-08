@@ -21,7 +21,8 @@ import { useHttp } from "../../hooks/http.hook";
 import { useFormik } from "formik";
 import validationSchema from "../../validators/editUser.validator";
 
-const User = () => {
+const User = (props) => {
+  const { profile } = props;
   const history = useHistory();
   const classes = useStyles();
   const location = useLocation();
@@ -79,7 +80,11 @@ const User = () => {
         "GET",
         null,
         { authorization: `Bearer ${auth.token}` },
-        { page: 1, limit: 1, uid: location.pathname.substring(7) }
+        {
+          page: 1,
+          limit: 1,
+          uid: profile ? location.pathname.substring(7) : auth.userId,
+        }
       );
       const userData = response.data.users[0];
       setUser(userData);
